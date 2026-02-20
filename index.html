@@ -184,7 +184,82 @@ body::before {
 
 .cl-btn:hover { border-color: var(--cyan-dim); color: var(--text); }
 .cl-btn.selected { border-color: var(--cyan); color: var(--cyan); background: rgba(106,154,176,0.08); }
-.cl-btn.locked { border-color: var(--border); color: rgba(58,80,96,0.4); cursor: not-allowed; }
+.cl-btn.locked {
+  border-color: var(--border); color: rgba(58,80,96,0.4);
+  cursor: none; position: relative; overflow: hidden;
+}
+.cl-btn.locked::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: transparent;
+  pointer-events: none;
+}
+.cl-btn.locked:hover {
+  border-color: rgba(176,64,48,0.6);
+  color: rgba(176,64,48,0.5);
+  background: rgba(176,64,48,0.06);
+}
+.cl-btn.locked:hover::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(135deg,
+      transparent 0%, transparent calc(50% - 0.8px),
+      rgba(176,64,48,0.55) calc(50% - 0.8px), rgba(176,64,48,0.55) calc(50% + 0.8px),
+      transparent calc(50% + 0.8px), transparent 100%),
+    linear-gradient(45deg,
+      transparent 0%, transparent calc(50% - 0.8px),
+      rgba(176,64,48,0.55) calc(50% - 0.8px), rgba(176,64,48,0.55) calc(50% + 0.8px),
+      transparent calc(50% + 0.8px), transparent 100%);
+  pointer-events: none;
+  border-radius: 0;
+}
+
+/* ── TOOLTIP ── */
+.tooltip-host {
+  position: relative;
+  cursor: default;
+}
+.tooltip-host:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-left: 2px solid var(--cyan-dim);
+  padding: 6px 10px;
+  font-size: 9px;
+  color: var(--text);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  z-index: 9000;
+  pointer-events: none;
+  line-height: 1.6;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  font-family: 'Share Tech Mono', monospace;
+}
+.tooltip-host:hover::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--border2);
+  z-index: 9001;
+  pointer-events: none;
+}
+/* red variant tooltip */
+.tooltip-host.tip-red:hover::after {
+  border-left-color: var(--red);
+  color: rgba(200,160,150,0.9);
+}
+/* amber variant */
+.tooltip-host.tip-amb:hover::after {
+  border-left-color: var(--amber);
+}
 
 .cl-label {
   font-size: 7px;
@@ -840,7 +915,7 @@ body::before {
         보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>
         프로토콜: <strong>Et0-SIGMA</strong><br>
         암호화: <strong>QKD-2048</strong><br>
-        페이지: <strong>1 OF 1 (EXTRACT)</strong>
+        페이지: <strong>1 OF 9 (EXTRACT)</strong>
       </div>
     </div>
 
@@ -950,15 +1025,15 @@ body::before {
           <div class="sec-block-tag">PR.08 // PHASE I</div>
         </div>
         <div class="sec-block-body">
-          <div class="data-row"><span class="dr-key">총 투자액</span><span class="dr-val amb">$78.0 BN USD</span></div>
-          <div class="data-row"><span class="dr-key">프로그램 단계</span><span class="dr-val hi">PHASE I — R&D</span></div>
-          <div class="data-row"><span class="dr-key">DB 수집 기간</span><span class="dr-val">4yr 2mo / 6yr TGT</span></div>
-          <div class="data-row"><span class="dr-key">데이터 포인트</span><span class="dr-val hi">8.4B RECORDS</span></div>
-          <div class="data-row"><span class="dr-key">기상 조건 분류</span><span class="dr-val">2,847 CATEGORIES</span></div>
-          <div class="data-row"><span class="dr-key">배치 유닛 수</span><span class="dr-val hi">2,000 / 3,500 TGT</span></div>
-          <div class="data-row"><span class="dr-key">해안선 커버리지</span><span class="dr-val">68.3%</span></div>
-          <div class="data-row"><span class="dr-key">평균 탐지 시간</span><span class="dr-val amb">12.4 sec (EST)</span></div>
-          <div class="data-row"><span class="dr-key">보안 프로토콜</span><span class="dr-val red">Et0-SIGMA ACTIVE</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-red" data-tip="총 프로그램 투자액 $78.0B // 유출 시 전액 매몰비용 처리&#10;나토 공동 분담금 포함 // 세부 내역 → PAGE 3">총 투자액</span><span class="dr-val amb">$78.0 BN USD</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="PHASE I: R&D 및 DB 구축 // 2단계: 대규모 배치&#10;3단계: 완전 운용 // 4단계: 나토 확장">프로그램 단계</span><span class="dr-val hi">PHASE I — R&D</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="전세계 47개국 312개 지점에서 수집 중&#10;목표 6년 달성 시 DB 완성도 98% 예상">DB 수집 기간</span><span class="dr-val">4yr 2mo / 6yr TGT</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="기상 조건별 레이저 산란 측정값 누적&#10;이상치 탐지 기준선 산출에 직접 사용됨">데이터 포인트</span><span class="dr-val hi">8.4B RECORDS</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="청명 284 / 강우 612 / 강설 318 / 박무 408&#10;폭풍·극지 892 / 사막·고온 333개 세부 분류">기상 조건 분류</span><span class="dr-val">2,847 CATEGORIES</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="현재 1,459개 설치 완료 // 목표 3,500개&#10;세부 섹터 현황 → PAGE 4">배치 유닛 수</span><span class="dr-val hi">2,000 / 3,500 TGT</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="국경선+해안선 기준 // 목표 커버리지 95%&#10;SECTOR C·D 배치 완료 시 달성 예상">해안선 커버리지</span><span class="dr-val">68.3%</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-amb" data-tip="이상치 감지 → 교차 확인 → 속도 계산 → 판정&#10;FOC 달성 후 목표 탐지 시간: &lt;8.0 sec">평균 탐지 시간</span><span class="dr-val amb">12.4 sec (EST)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-red" data-tip="GCHQ가 본 프로그램 전용으로 신규 개발&#10;QKD-2048 양자키 암호화 // 타 프로그램 미적용">보안 프로토콜</span><span class="dr-val red">Et0-SIGMA ACTIVE</span></div>
         </div>
       </div>
 
@@ -1186,7 +1261,7 @@ body::before {
     <div class="doc-footer">
       <span>BARAD // PHANTOM VEIL // PR.08 Et0 // DAILY BRIEF</span>
       <span>SECRET // NOFORN // Et0-SIGMA</span>
-      <span>PAGE 1 OF 5 // DO NOT REPRODUCE</span>
+      <span>PAGE 1 OF 9 // DO NOT REPRODUCE</span>
     </div>
 
   </div><!-- /doc-body page 1 -->
@@ -1212,7 +1287,7 @@ body::before {
       </div>
       <div class="dh-right">
         보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>
-        페이지: <strong>2 OF 5</strong><br>
+        페이지: <strong>2 OF 9</strong><br>
         참조: <strong>PR08-Et0-TL-002</strong>
       </div>
     </div>
@@ -1429,7 +1504,7 @@ body::before {
     <div class="doc-footer">
       <span>BARAD // PHANTOM VEIL // PR.08 Et0 // DEPLOYMENT TIMELINE</span>
       <span>SECRET // NOFORN // Et0-SIGMA</span>
-      <span>PAGE 2 OF 5 // DO NOT REPRODUCE</span>
+      <span>PAGE 2 OF 9 // DO NOT REPRODUCE</span>
     </div>
   </div>
   <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
@@ -1447,7 +1522,7 @@ body::before {
         <div class="doc-title-sub">PR.08 Et0 // $78.0 BN PROGRAMME BREAKDOWN</div>
         <div class="doc-date">FISCAL YEAR ANALYSIS — EYES ONLY</div>
       </div>
-      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>3 OF 5</strong></div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>3 OF 9</strong></div>
     </div>
 
     <!-- BUDGET OVERVIEW -->
@@ -1539,7 +1614,7 @@ body::before {
     <div class="doc-footer">
       <span>BARAD // PHANTOM VEIL // PR.08 Et0 // FINANCIAL DETAIL</span>
       <span>SECRET // NOFORN // Et0-SIGMA // EYES ONLY</span>
-      <span>PAGE 3 OF 5 // DO NOT REPRODUCE</span>
+      <span>PAGE 3 OF 9 // DO NOT REPRODUCE</span>
     </div>
   </div>
   <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
@@ -1557,7 +1632,7 @@ body::before {
         <div class="doc-title-sub">PR.08 Et0 // SECTOR-BY-SECTOR BREAKDOWN // D+847</div>
         <div class="doc-date">DEPLOYMENT DETAIL — CLASSIFIED</div>
       </div>
-      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>4 OF 5</strong></div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>4 OF 9</strong></div>
     </div>
 
     <!-- SECTOR OVERVIEW -->
@@ -1656,7 +1731,7 @@ body::before {
     <div class="doc-footer">
       <span>BARAD // PHANTOM VEIL // PR.08 Et0 // DEPLOYMENT STATUS</span>
       <span>SECRET // NOFORN // Et0-SIGMA</span>
-      <span>PAGE 4 OF 5 // DO NOT REPRODUCE</span>
+      <span>PAGE 4 OF 9 // DO NOT REPRODUCE</span>
     </div>
   </div>
   <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
@@ -1674,7 +1749,7 @@ body::before {
         <div class="doc-title-sub">PR.08 Et0 // LIDAR UNIT &amp; ALGORITHM DETAIL</div>
         <div class="doc-date">TECHNICAL REFERENCE — CLASSIFIED</div>
       </div>
-      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>5 OF 5</strong></div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>5 OF 9</strong></div>
     </div>
 
     <!-- LIDAR UNIT SPEC -->
@@ -1774,9 +1849,9 @@ body::before {
             <div class="al-head">▲ CLASSIFIED — CAPABILITY ESTIMATE</div>
             이하 수치는 추정값이며 실제 운용 성능은 기상, 배치 밀도, 고도에 따라 상이할 수 있음.
           </div>
-          <div class="data-row"><span class="dr-key">F-22 탐지 확률</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
-          <div class="data-row"><span class="dr-key">F-35 탐지 확률</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
-          <div class="data-row"><span class="dr-key">B-2 탐지 확률</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="극초저피탐 단발 전투기급 // RCS &lt;0.001 m² 분류">TGT-A (RCS &lt;0.001 m²)</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="초저피탐 다목적 전투기급 // RCS 0.001~0.01 m² 분류">TGT-B (RCS 0.001~0.01 m²)</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="저피탐 장거리 전략폭격기급 // RCS 0.01~0.1 m² 분류">TGT-C (RCS 0.01~0.1 m²)</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
           <div class="data-row"><span class="dr-key">평균 탐지 시간</span><span class="dr-val hi">12.4 sec (EST)</span></div>
           <div class="data-row"><span class="dr-key">최소 탐지 고도</span><span class="dr-val">300 m</span></div>
           <div class="data-row"><span class="dr-key">최대 탐지 고도</span><span class="dr-val"><span class="rx">████</span> m</span></div>
@@ -1788,7 +1863,602 @@ body::before {
     <div class="doc-footer">
       <span>BARAD // PHANTOM VEIL // PR.08 Et0 // TECHNICAL SPEC</span>
       <span>SECRET // NOFORN // Et0-SIGMA // EYES ONLY</span>
-      <span>PAGE 5 OF 5 // DO NOT REPRODUCE</span>
+      <span>PAGE 5 OF 9 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 6 — THREAT ASSESSMENT                         -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-THR-006</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">THREAT ASSESSMENT</div>
+        <div class="doc-title-sub">PR.08 Et0 // KNOWN STEALTH PLATFORMS BY RCS CLASS</div>
+        <div class="doc-date">THREAT INTELLIGENCE — EYES ONLY</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>6 OF 9</strong></div>
+    </div>
+
+    <div class="alert-strip" style="margin-bottom:8px;">
+      <div class="al-head">▲ THREAT INTELLIGENCE — CLASSIFICATION NOTICE</div>
+      본 섹션의 모든 항공기 플랫폼은 RCS 범주로만 식별된다. 구체적 기체명·제원은 별도 STRAP-5 문서 참조. 무단 기체명 식별 시도는 Et0-SIGMA 위반으로 처리됨.
+    </div>
+
+    <!-- THREAT TABLE -->
+    <div class="sec-block full-width" style="margin-bottom:8px;">
+      <div class="sec-block-head"><div class="sec-block-title">KNOWN STEALTH PLATFORMS — RCS CLASSIFICATION MATRIX</div><div class="sec-block-tag">THREAT INTEL // CLASSIFIED</div></div>
+      <div class="sec-block-body">
+        <table class="status-table">
+          <thead>
+            <tr><th>RCS CLASS</th><th>RCS 범위</th><th>플랫폼 유형</th><th>운용국</th><th>예상 침입 경로</th><th>Et0 탐지 우선순위</th><th>대응 시간 (EST)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tooltip-host tip-red" data-tip="극초저피탐 단발전투기급 // 능동위상배열레이더 탑재 추정&#10;초음속 순항 가능 // 상세 제원 STRAP-5 참조">TGT-ALPHA</span></td>
+              <td style="color:var(--red)">&lt; 0.001 m²</td>
+              <td>단발 다목적 전투기</td>
+              <td><span class="rx">████</span></td>
+              <td>북해 → SECTOR A</td>
+              <td><span class="an-status conf">PRIORITY 1</span></td>
+              <td style="color:var(--red)">&lt; <span class="rx">██</span> sec</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host tip-red" data-tip="극초저피탐 쌍발전투기급 // 슈퍼크루즈 가능 추정&#10;고고도 침투 특화 // 상세 제원 STRAP-5 참조">TGT-BRAVO</span></td>
+              <td style="color:var(--red)">&lt; 0.001 m²</td>
+              <td>쌍발 공중우세 전투기</td>
+              <td><span class="rx">████</span></td>
+              <td>대서양 → SECTOR C</td>
+              <td><span class="an-status conf">PRIORITY 1</span></td>
+              <td style="color:var(--red)">&lt; <span class="rx">██</span> sec</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host tip-amb" data-tip="초저피탐 쌍발전투기급 // STOVL 변형 존재 추정&#10;해상 운용 가능 // 상세 제원 STRAP-5 참조">TGT-CHARLIE</span></td>
+              <td style="color:var(--amber)">0.001 ~ 0.01 m²</td>
+              <td>쌍발 다목적 전투기</td>
+              <td><span class="rx">████</span>, <span class="rx">████</span></td>
+              <td>채널 → SECTOR D</td>
+              <td><span class="an-status pend">PRIORITY 2</span></td>
+              <td style="color:var(--amber)">&lt; <span class="rx">██</span> sec</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host tip-amb" data-tip="저피탐 쌍발전략폭격기급 // 장거리 핵투발 가능&#10;비행익 형상 // 상세 제원 STRAP-5 참조">TGT-DELTA</span></td>
+              <td style="color:var(--amber)">0.001 ~ 0.01 m²</td>
+              <td>비행익 전략폭격기</td>
+              <td><span class="rx">████</span></td>
+              <td>북극 → SECTOR A</td>
+              <td><span class="an-status pend">PRIORITY 2</span></td>
+              <td style="color:var(--amber)">&lt; <span class="rx">██</span> sec</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host" data-tip="저피탐 무인전투기급 // 장기체공 가능&#10;자율타격 추정 // 상세 제원 STRAP-5 참조">TGT-ECHO</span></td>
+              <td style="color:var(--cyan)">0.01 ~ 0.1 m²</td>
+              <td>무인 전투기 (UCAV)</td>
+              <td><span class="rx">████</span>, <span class="rx">████</span></td>
+              <td>해상 → 전 SECTOR</td>
+              <td><span class="an-status" style="border-color:var(--cyan);color:var(--cyan);">PRIORITY 3</span></td>
+              <td style="color:var(--cyan)">&lt; <span class="rx">██</span> sec</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host" data-tip="차세대 극초음속 활공체 // RCS 분류 확정 불가&#10;탐지 알고리즘 개발 중 // 최고 우선순위 연구과제">TGT-ZETA (NEW)</span></td>
+              <td style="color:var(--red)">미확인 / &lt; 0.0001 m²</td>
+              <td>극초음속 활공체 (HGV)</td>
+              <td><span class="rx">████</span></td>
+              <td>미확인</td>
+              <td><span class="an-status conf">PRIORITY 0</span></td>
+              <td style="color:var(--red)">탐지 불확실</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- THREAT ANALYSIS + PREDICTED ROUTES -->
+    <div class="main-grid">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">위협 분석 / THREAT ANALYSIS</div><div class="sec-block-tag">INTEL ESTIMATE</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="TGT-ALPHA/BRAVO: 가장 높은 위협 // PRIORITY 1&#10;현재 Et0 시스템 탐지 가능 여부 검증 중">최고위협 플랫폼</span><span class="dr-val red">TGT-ALPHA / BRAVO</span></div>
+          <div class="data-row"><span class="dr-key">주 침투 벡터</span><span class="dr-val amb">북해 / 대서양</span></div>
+          <div class="data-row"><span class="dr-key">예상 침투 고도</span><span class="dr-val"><span class="rx">████</span> ~ <span class="rx">████</span> ft</span></div>
+          <div class="data-row"><span class="dr-key">예상 침투 속도</span><span class="dr-val">M0.9 ~ M1.8</span></div>
+          <div class="data-row"><span class="dr-key">TGT-ZETA 대응</span><span class="dr-val red">알고리즘 미개발</span></div>
+          <div class="data-row"><span class="dr-key">위협 갱신 주기</span><span class="dr-val">매 30일</span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">RCS별 Et0 탐지 성능 (EST)</div><div class="sec-block-tag">CAPABILITY MATRIX</div></div>
+        <div class="sec-block-body">
+          <div class="notice-strip"><div class="nl-head">NOTE</div>이하 수치는 현재 배치 밀도(53.2%) 기준 추정값. FOC 달성(85% 직하 확률) 시 전 클래스 탐지율 상향 예상.</div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-red" data-tip="RCS &lt;0.001 m² — 극초저피탐 클래스&#10;직하 유닛 확보 시 산란 이상치 감지 가능">TGT-ALPHA/BRAVO</span><span class="dr-val amb"><span class="rx">██</span>% (D+847 기준)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-amb" data-tip="RCS 0.001~0.01 m² — 초저피탐 클래스&#10;현재 SECTOR A 기준 교차 확인 성공률 측정 중">TGT-CHARLIE/DELTA</span><span class="dr-val amb"><span class="rx">██</span>% (D+847 기준)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="RCS 0.01~0.1 m² — 저피탐 클래스&#10;상대적으로 높은 산란 이상치 발생 → 탐지 용이">TGT-ECHO</span><span class="dr-val grn"><span class="rx">██</span>% (D+847 기준)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-red" data-tip="극초음속 활공체 // 직선 이동 판별 알고리즘&#10;현재 HGV 속도 범주 미포함 — PRIORITY 연구과제">TGT-ZETA (HGV)</span><span class="dr-val red">탐지 불가 (연구 중)</span></div>
+          <div class="data-row"><span class="dr-key">FOC 후 전체 목표</span><span class="dr-val red"><span class="rx">██</span>% // CLASSIFIED</span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">예상 침투 경로</div><div class="sec-block-tag">ROUTE ANALYSIS</div></div>
+        <div class="sec-block-body">
+          <div class="activity-item">
+            <div class="ai-time">ROUTE-01 // 북해 고위협 경로</div>
+            <div class="ai-text">SECTOR A (북부 해안) 경유 → 내륙 침투. TGT-ALPHA/BRAVO 주 예상 경로. 현재 SECTOR A 배치율 94.1% — 최우선 방어.</div>
+            <div class="ai-tag">PRIORITY 1</div>
+          </div>
+          <div class="activity-item">
+            <div class="ai-time">ROUTE-02 // 채널 우회 경로</div>
+            <div class="ai-text">SECTOR D (채널) 경유 → 남부 침투. 현재 SECTOR D 미배치 — 취약 구간. TGT-CHARLIE 주 경로 추정.</div>
+            <div class="ai-tag" style="color:var(--red);border-color:var(--red);">CRITICAL GAP</div>
+          </div>
+          <div class="activity-item">
+            <div class="ai-time">ROUTE-03 // 대서양 장거리 경로</div>
+            <div class="ai-text">장거리 비행익형 전략폭격기(TGT-DELTA) 예상 경로. 극고도 침투 시 현 Et0 감지 한계 초과 가능.</div>
+            <div class="ai-tag" style="color:var(--amber);border-color:var(--amber);">MONITOR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // THREAT ASSESSMENT</span>
+      <span>SECRET // NOFORN // Et0-SIGMA // EYES ONLY</span>
+      <span>PAGE 6 OF 9 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 7 — ANOMALY CASE DEEP DIVE                    -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-ANL-007</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">ANOMALY CASE FILE</div>
+        <div class="doc-title-sub">PR.08 Et0 // AN-2847 DEEP DIVE ANALYSIS</div>
+        <div class="doc-date">CASE INVESTIGATION — IN PROGRESS</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>7 OF 9</strong></div>
+    </div>
+
+    <div class="alert-strip" style="margin-bottom:8px;">
+      <div class="al-head">▲ ACTIVE INVESTIGATION — AN-2847 // NORTH SEA SECTOR A // STATUS: PENDING</div>
+      탐지 이벤트 AN-2847은 현재 교차 확인 진행 중이며 자연 현상 또는 항공기 여부 미판정 상태임. 모든 분석 내용은 미확정이며 추가 데이터 수신 대기 중.
+    </div>
+
+    <!-- TIMELINE OF AN-2847 -->
+    <div class="sec-block full-width" style="margin-bottom:8px;">
+      <div class="sec-block-head"><div class="sec-block-title">AN-2847 탐지 타임라인 — DETECTION EVENT TIMELINE</div><div class="sec-block-tag">0300Z ~ 0340Z</div></div>
+      <div class="sec-block-body">
+        <svg viewBox="0 0 1060 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-bottom:8px;">
+          <rect width="1060" height="120" fill="rgba(10,14,20,0.4)"/>
+          <!-- timeline bar -->
+          <line x1="60" y1="60" x2="1000" y2="60" stroke="rgba(42,56,72,0.8)" stroke-width="2"/>
+          <!-- time ticks -->
+          <line x1="60" y1="52" x2="60" y2="68" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+          <text x="60" y="80" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0300Z</text>
+          <line x1="295" y1="52" x2="295" y2="68" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+          <text x="295" y="80" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0310Z</text>
+          <line x1="530" y1="52" x2="530" y2="68" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+          <text x="530" y="80" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0320Z</text>
+          <line x1="765" y1="52" x2="765" y2="68" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+          <text x="765" y="80" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0330Z</text>
+          <line x1="1000" y1="52" x2="1000" y2="68" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+          <text x="1000" y="80" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0340Z</text>
+
+          <!-- Event 1: 0312Z — U-0847 initial detection -->
+          <circle cx="178" cy="60" r="7" fill="rgba(176,64,48,0.3)" stroke="#b04030" stroke-width="1.5"/>
+          <line x1="178" y1="53" x2="178" y2="20" stroke="rgba(176,64,48,0.5)" stroke-width="1"/>
+          <text x="178" y="15" fill="#b04030" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0312Z</text>
+          <text x="178" y="8" fill="rgba(176,64,48,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">U-0847 초기감지</text>
+
+          <!-- Event 2: 0315Z — alert triggered -->
+          <circle cx="248" cy="60" r="6" fill="rgba(160,120,48,0.3)" stroke="#a07830" stroke-width="1.5"/>
+          <line x1="248" y1="67" x2="248" y2="100" stroke="rgba(160,120,48,0.5)" stroke-width="1"/>
+          <text x="248" y="108" fill="#a07830" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0315Z</text>
+          <text x="248" y="115" fill="rgba(160,120,48,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">ALERT 발령</text>
+
+          <!-- Event 3: 0318Z — array focus -->
+          <circle cx="318" cy="60" r="6" fill="rgba(42,72,88,0.4)" stroke="#6a9ab0" stroke-width="1.5"/>
+          <line x1="318" y1="53" x2="318" y2="20" stroke="rgba(106,154,176,0.4)" stroke-width="1"/>
+          <text x="318" y="15" fill="#6a9ab0" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0318Z</text>
+          <text x="318" y="8" fill="rgba(106,154,176,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">전체어레이집중</text>
+
+          <!-- Event 4: 0322Z — U-0846 cross confirm -->
+          <circle cx="413" cy="60" r="6" fill="rgba(42,72,88,0.4)" stroke="#6a9ab0" stroke-width="1.5"/>
+          <line x1="413" y1="67" x2="413" y2="100" stroke="rgba(106,154,176,0.4)" stroke-width="1"/>
+          <text x="413" y="108" fill="#6a9ab0" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0322Z</text>
+          <text x="413" y="115" fill="rgba(106,154,176,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">U-0846 교차확인</text>
+
+          <!-- Event 5: 0327Z — velocity calc -->
+          <circle cx="530" cy="60" r="6" fill="rgba(42,72,88,0.4)" stroke="#6a9ab0" stroke-width="1.5"/>
+          <line x1="530" y1="53" x2="530" y2="20" stroke="rgba(106,154,176,0.4)" stroke-width="1"/>
+          <text x="530" y="15" fill="#6a9ab0" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0327Z</text>
+          <text x="530" y="8" fill="rgba(106,154,176,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">속도벡터계산</text>
+
+          <!-- Event 6: 0332Z — predictive fire -->
+          <circle cx="648" cy="60" r="6" fill="rgba(58,100,70,0.4)" stroke="#3a7850" stroke-width="1.5"/>
+          <line x1="648" y1="67" x2="648" y2="100" stroke="rgba(58,120,80,0.4)" stroke-width="1"/>
+          <text x="648" y="108" fill="#3a7850" font-family="Share Tech Mono" font-size="8" text-anchor="middle">0332Z</text>
+          <text x="648" y="115" fill="rgba(58,120,80,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">예측경로발사</text>
+
+          <!-- NOW marker -->
+          <line x1="820" y1="40" x2="820" y2="80" stroke="rgba(176,64,48,0.7)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <rect x="800" y="40" width="40" height="12" fill="rgba(176,64,48,0.6)"/>
+          <text x="820" y="49" fill="rgba(255,200,190,0.9)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">NOW</text>
+          <text x="820" y="95" fill="rgba(160,120,48,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">판정 대기 중</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SCATTER GRAPH + DETAILS -->
+    <div class="main-grid-wide" style="margin-bottom:8px;">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">산란값 시계열 — SCATTER VALUE TIME SERIES</div><div class="sec-block-tag">U-0847 // 0300Z~0340Z</div></div>
+        <div class="sec-block-body">
+          <svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <rect width="500" height="160" fill="rgba(10,14,20,0.3)"/>
+            <!-- axes -->
+            <line x1="50" y1="10" x2="50" y2="130" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+            <line x1="50" y1="130" x2="490" y2="130" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+            <!-- y axis labels -->
+            <text x="44" y="133" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="end">0.80</text>
+            <text x="44" y="103" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="end">0.90</text>
+            <text x="44" y="73" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="end">1.00</text>
+            <text x="44" y="43" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="end">1.10</text>
+            <text x="44" y="13" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="end">1.20</text>
+            <!-- baseline 0.94 -->
+            <line x1="50" y1="97" x2="490" y2="97" stroke="rgba(58,120,80,0.4)" stroke-width="1" stroke-dasharray="5,3"/>
+            <text x="492" y="100" fill="rgba(58,120,80,0.6)" font-family="Share Tech Mono" font-size="7">BASE</text>
+            <!-- upper threshold -->
+            <line x1="50" y1="73" x2="490" y2="73" stroke="rgba(176,64,48,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="492" y="76" fill="rgba(176,64,48,0.5)" font-family="Share Tech Mono" font-size="7">THR</text>
+            <!-- scatter data line — normal then spike -->
+            <polyline points="60,100 90,98 120,102 150,97 180,99 210,96 240,95 260,91 280,72 300,48 320,55 340,62 360,70 380,76 400,74 420,78 450,80"
+              fill="none" stroke="rgba(106,154,176,0.7)" stroke-width="1.5"/>
+            <!-- spike highlight -->
+            <circle cx="300" cy="48" r="4" fill="rgba(176,64,48,0.5)" stroke="#b04030" stroke-width="1.5"/>
+            <line x1="300" y1="44" x2="300" y2="15" stroke="rgba(176,64,48,0.4)" stroke-width="1"/>
+            <text x="300" y="12" fill="#b04030" font-family="Share Tech Mono" font-size="7" text-anchor="middle">+0.23</text>
+            <!-- grid lines horizontal -->
+            <line x1="50" y1="103" x2="490" y2="103" stroke="rgba(34,44,56,0.3)" stroke-width="1"/>
+            <line x1="50" y1="73" x2="490" y2="73" stroke="rgba(34,44,56,0.3)" stroke-width="1"/>
+            <line x1="50" y1="43" x2="490" y2="43" stroke="rgba(34,44,56,0.3)" stroke-width="1"/>
+            <!-- x axis time labels -->
+            <text x="60" y="142" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7">0300</text>
+            <text x="200" y="142" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7">0310</text>
+            <text x="340" y="142" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7">0320</text>
+            <text x="450" y="142" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7">0328</text>
+            <!-- label -->
+            <text x="60" y="155" fill="rgba(42,56,72,0.8)" font-family="Share Tech Mono" font-size="7">SCATTER INDEX // U-0847 // NORTH SEA SECTOR A</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">AN-2847 데이터 상세 / CASE DETAIL</div><div class="sec-block-tag">INVESTIGATION LOG</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">이벤트 번호</span><span class="dr-val red">AN-2847</span></div>
+          <div class="data-row"><span class="dr-key">최초 탐지 유닛</span><span class="dr-val hi">U-0847 (SECTOR A)</span></div>
+          <div class="data-row"><span class="dr-key">탐지 시각</span><span class="dr-val amb">0312Z</span></div>
+          <div class="data-row"><span class="dr-key">산란 이상치</span><span class="dr-val red">+0.23 (임계값 초과)</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="기상 조건 코드 NTH-OVC-82 적용&#10;흐림 / 습도 82% / 기압 1008 hPa">당시 기상 조건</span><span class="dr-val">흐림 // 습도 82%</span></div>
+          <div class="data-row"><span class="dr-key">교차 확인 유닛</span><span class="dr-val">U-0846 / U-0848</span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-amb" data-tip="두 유닛 모두 이상치 확인 완료&#10;U-0846: +0.18 / U-0848: +0.14">교차 확인 결과</span><span class="dr-val amb">양성 (2/2 유닛)</span></div>
+          <div class="data-row"><span class="dr-key">계산 속도 벡터</span><span class="dr-val hi">M0.92 / 방위 <span class="rx">███</span>°</span></div>
+          <div class="data-row"><span class="dr-key">직선 이동 지속</span><span class="dr-val amb">확인 중 (8분 경과)</span></div>
+          <div class="data-row"><span class="dr-key">현재 판정</span><span class="dr-val red">PENDING — 미확정</span></div>
+          <div class="data-row"><span class="dr-key">에스컬레이션</span><span class="dr-val red">RAF 통보 완료</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // ANOMALY CASE FILE</span>
+      <span>SECRET // NOFORN // Et0-SIGMA</span>
+      <span>PAGE 7 OF 9 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 8 — ORGANISATION / PERSONNEL                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-ORG-008</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">ORGANISATION &amp; PERSONNEL</div>
+        <div class="doc-title-sub">PR.08 Et0 // BARAD PROGRAMME STRUCTURE // CLASSIFIED</div>
+        <div class="doc-date">PERSONNEL — EYES ONLY // L6 ACCESS</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>8 OF 9</strong></div>
+    </div>
+
+    <div class="notice-strip" style="margin-bottom:8px;">
+      <div class="nl-head">PERSONNEL NOTICE</div>
+      모든 인명은 Et0-SIGMA 프로토콜에 따라 블랙아웃 처리됨. 직위 및 소속만 기재. 실명 조회는 GCHQ STRAP-4 문서 참조.
+    </div>
+
+    <!-- ORG CHART (SVG) -->
+    <div class="sec-block full-width" style="margin-bottom:8px;">
+      <div class="sec-block-head"><div class="sec-block-title">BARAD PROGRAMME ORGANISATION CHART</div><div class="sec-block-tag">CLASSIFIED STRUCTURE</div></div>
+      <div class="sec-block-body">
+        <svg viewBox="0 0 1060 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <rect width="1060" height="260" fill="rgba(10,14,20,0.3)"/>
+          <!-- Top: Programme Director -->
+          <rect x="390" y="10" width="280" height="44" rx="1" fill="rgba(28,40,56,0.9)" stroke="rgba(176,64,48,0.6)" stroke-width="1.5"/>
+          <text x="530" y="28" fill="rgba(176,64,48,0.8)" font-family="Share Tech Mono" font-size="9" text-anchor="middle" letter-spacing="1">PROGRAMME DIRECTOR</text>
+          <text x="530" y="40" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">MOD-DSTL // L6 // <tspan style="background:#0f1318;fill:#0f1318">████████████</tspan></text>
+          <text x="530" y="50" fill="#0f1318" font-family="Share Tech Mono" font-size="8" text-anchor="middle">████████████</text>
+          <!-- connector down -->
+          <line x1="530" y1="54" x2="530" y2="80" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <line x1="180" y1="80" x2="880" y2="80" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+
+          <!-- L2: Deputy, Technical Dir, Security Dir, Liaison -->
+          <!-- Deputy -->
+          <line x1="180" y1="80" x2="180" y2="100" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <rect x="80" y="100" width="200" height="40" rx="1" fill="rgba(20,28,40,0.9)" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <text x="180" y="116" fill="rgba(106,154,176,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">DEPUTY DIRECTOR</text>
+          <text x="180" y="128" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">MOD // <tspan fill="#181f28">█████████</tspan></text>
+
+          <!-- Tech Dir -->
+          <line x1="400" y1="80" x2="400" y2="100" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <rect x="300" y="100" width="200" height="40" rx="1" fill="rgba(20,28,40,0.9)" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <text x="400" y="116" fill="rgba(106,154,176,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">TECHNICAL DIRECTOR</text>
+          <text x="400" y="128" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">DSTL // <tspan fill="#181f28">█████████</tspan></text>
+
+          <!-- Security Dir -->
+          <line x1="660" y1="80" x2="660" y2="100" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <rect x="560" y="100" width="200" height="40" rx="1" fill="rgba(20,28,40,0.9)" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <text x="660" y="116" fill="rgba(106,154,176,0.7)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">SECURITY DIRECTOR</text>
+          <text x="660" y="128" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">GCHQ // <tspan fill="#181f28">█████████</tspan></text>
+
+          <!-- NSA Liaison -->
+          <line x1="880" y1="80" x2="880" y2="100" stroke="rgba(42,56,72,0.6)" stroke-width="1"/>
+          <rect x="780" y="100" width="200" height="40" rx="1" fill="rgba(20,28,40,0.9)" stroke="rgba(42,56,72,0.5)" stroke-width="1" stroke-dasharray="4,2"/>
+          <text x="880" y="116" fill="rgba(106,154,176,0.6)" font-family="Share Tech Mono" font-size="8" text-anchor="middle">NSA LIAISON OFFICER</text>
+          <text x="880" y="128" fill="rgba(58,80,96,0.5)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">NSA // <tspan fill="#181f28">█████████</tspan></text>
+
+          <!-- L3 under Tech Dir -->
+          <line x1="400" y1="140" x2="400" y2="165" stroke="rgba(42,56,72,0.5)" stroke-width="1"/>
+          <line x1="280" y1="165" x2="520" y2="165" stroke="rgba(42,56,72,0.5)" stroke-width="1"/>
+          <line x1="280" y1="165" x2="280" y2="180" stroke="rgba(42,56,72,0.5)" stroke-width="1"/>
+          <line x1="520" y1="165" x2="520" y2="180" stroke="rgba(42,56,72,0.5)" stroke-width="1"/>
+          <rect x="200" y="180" width="160" height="36" rx="1" fill="rgba(15,22,32,0.9)" stroke="rgba(34,48,60,0.6)" stroke-width="1"/>
+          <text x="280" y="194" fill="rgba(80,110,130,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">LIDAR SYSTEMS LEAD</text>
+          <text x="280" y="205" fill="rgba(42,56,72,0.6)" font-family="Share Tech Mono" font-size="6" text-anchor="middle"><tspan fill="#0f1318">██████████</tspan></text>
+          <rect x="440" y="180" width="160" height="36" rx="1" fill="rgba(15,22,32,0.9)" stroke="rgba(34,48,60,0.6)" stroke-width="1"/>
+          <text x="520" y="194" fill="rgba(80,110,130,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">AI / ALGORITHM LEAD</text>
+          <text x="520" y="205" fill="rgba(42,56,72,0.6)" font-family="Share Tech Mono" font-size="6" text-anchor="middle"><tspan fill="#0f1318">██████████</tspan></text>
+
+          <!-- L3 under Security Dir -->
+          <line x1="660" y1="140" x2="660" y2="165" stroke="rgba(42,56,72,0.5)" stroke-width="1"/>
+          <rect x="600" y="165" width="120" height="36" rx="1" fill="rgba(15,22,32,0.9)" stroke="rgba(34,48,60,0.6)" stroke-width="1"/>
+          <text x="660" y="179" fill="rgba(80,110,130,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">Et0-SIGMA CUSTODIAN</text>
+          <text x="660" y="190" fill="rgba(42,56,72,0.6)" font-family="Share Tech Mono" font-size="6" text-anchor="middle"><tspan fill="#0f1318">██████████</tspan></text>
+
+          <!-- Total staff note -->
+          <text x="530" y="240" fill="rgba(42,56,72,0.6)" font-family="Share Tech Mono" font-size="8" text-anchor="middle" letter-spacing="2">TOTAL AUTHORISED PERSONNEL: <tspan fill="#0f1318">██</tspan> PERSONS // ALL NAMES CLASSIFIED Et0-SIGMA</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- PERSONNEL STATS + ACCESS LIST -->
+    <div class="main-grid">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">인원 현황 / PERSONNEL SUMMARY</div><div class="sec-block-tag">Et0-SIGMA AUTHORISED</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">총 허가 인원</span><span class="dr-val red"><span class="rx">██</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">L6 접근 인원</span><span class="dr-val red"><span class="rx">█</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">L5 접근 인원</span><span class="dr-val amb"><span class="rx">██</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">L4 접근 인원</span><span class="dr-val"><span class="rx">██</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">MOD 소속</span><span class="dr-val"><span class="rx">██</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">DSTL 소속</span><span class="dr-val"><span class="rx">██</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">GCHQ 소속</span><span class="dr-val"><span class="rx">█</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">NSA 연락관</span><span class="dr-val"><span class="rx">█</span> 명</span></div>
+          <div class="data-row"><span class="dr-key">인원 검토 주기</span><span class="dr-val">매 6개월</span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">보안 서약 현황 / CLEARANCE STATUS</div><div class="sec-block-tag">Et0-SIGMA</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">DV 취득 인원</span><span class="dr-val hi"><span class="rx">██</span> 명 (100%)</span></div>
+          <div class="data-row"><span class="dr-key">Et0-SIGMA 서약</span><span class="dr-val hi"><span class="rx">██</span> 명 (100%)</span></div>
+          <div class="data-row"><span class="dr-key">최근 보안 위반</span><span class="dr-val grn">0건</span></div>
+          <div class="data-row"><span class="dr-key">보안 감사 주기</span><span class="dr-val">매 90일</span></div>
+          <div class="data-row"><span class="dr-key">최근 감사 결과</span><span class="dr-val grn">이상 없음</span></div>
+          <div class="data-row"><span class="dr-key">다음 감사 예정</span><span class="dr-val"><span class="rx">██████████</span></span></div>
+          <div class="data-row"><span class="dr-key tooltip-host tip-red" data-tip="퇴직·이직·보안 위반 시 즉시 Et0-SIGMA&#10;접근 권한 폐기 및 GCHQ 통보 절차 개시">접근권한 폐기 절차</span><span class="dr-val">즉시 // GCHQ 통보</span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">세션 접속 로그 / ACCESS LOG</div><div class="sec-block-tag">TODAY // MONITORED</div></div>
+        <div class="sec-block-body">
+          <div class="activity-item">
+            <div class="ai-time">0248Z — L6 접속</div>
+            <div class="ai-text">PROGRAMME DIRECTOR — 정기 브리핑 접속. 세션 28분. 정상 종료.</div>
+            <div class="ai-tag" style="color:var(--green);border-color:var(--green);">NORMAL</div>
+          </div>
+          <div class="activity-item">
+            <div class="ai-time">0412Z — L6 접속</div>
+            <div class="ai-text">현재 접속 중. AN-2847 이벤트 확인. 세션 진행 중.</div>
+            <div class="ai-tag" style="color:var(--amber);border-color:var(--amber);">ACTIVE</div>
+          </div>
+          <div class="activity-item">
+            <div class="ai-time">0318Z — L5 접속</div>
+            <div class="ai-text">TECHNICAL DIRECTOR — AN-2847 어레이 집중 명령 발령. 세션 14분.</div>
+            <div class="ai-tag" style="color:var(--green);border-color:var(--green);">NORMAL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // ORGANISATION</span>
+      <span>SECRET // NOFORN // Et0-SIGMA // EYES ONLY</span>
+      <span>PAGE 8 OF 9 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 9 — ALLIED INTEGRATION                        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-ALL-009</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">ALLIED INTEGRATION STATUS</div>
+        <div class="doc-title-sub">PR.08 Et0 // FIVE EYES &amp; NATO COORDINATION</div>
+        <div class="doc-date">LIAISON STATUS — CLASSIFIED</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>9 OF 9</strong></div>
+    </div>
+
+    <div class="notice-strip" style="margin-bottom:8px;">
+      <div class="nl-head">REL TO GBR, USA — FVEY ONLY</div>
+      본 섹션은 Five Eyes 협약국 및 지정 NATO 회원국에 한해 배포됨. 비FVEY 동맹국에 대한 부분 공개 여부는 Et0-SIGMA L6 승인 필요.
+    </div>
+
+    <!-- ALLY STATUS TABLE -->
+    <div class="sec-block full-width" style="margin-bottom:8px;">
+      <div class="sec-block-head"><div class="sec-block-title">FIVE EYES &amp; NATO 연동 현황 — INTEGRATION MATRIX</div><div class="sec-block-tag">D+847 STATUS</div></div>
+      <div class="sec-block-body">
+        <table class="status-table">
+          <thead>
+            <tr><th>국가 / NATION</th><th>협약 체계</th><th>데이터 공유</th><th>연락관</th><th>기술 연동</th><th>연동 수준</th><th>비고</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tooltip-host" data-tip="NSA 주도 기술 지원 // QKD 연동 공동 개발&#10;PHASE IV 전체 데이터 공유 예정">🇺🇸 USA (NSA)</span></td>
+              <td>UKUSA // FVEY</td>
+              <td style="color:var(--green)">실시간 (암호화)</td>
+              <td style="color:var(--green)"><span class="rx">█</span> 명 파견</td>
+              <td style="color:var(--green)">QKD-2048 연동</td>
+              <td><span class="an-status conf" style="border-color:var(--green);color:var(--green);">FULL</span></td>
+              <td>PHASE I부터 참여</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host" data-tip="CSE 연락관 파견 // 극지 WX 데이터 제공&#10;북극 경로 산란 DB 보완에 핵심 기여">🇨🇦 CANADA (CSE)</span></td>
+              <td>FVEY</td>
+              <td style="color:var(--green)">배치 데이터 공유</td>
+              <td style="color:var(--green)"><span class="rx">█</span> 명 파견</td>
+              <td style="color:var(--amber)">부분 연동</td>
+              <td><span class="an-status pend">PARTIAL</span></td>
+              <td>극지 DB 공동 수집</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host" data-tip="ASD 연락관 // 남반구 기상 데이터 제공&#10;사막·고온 WX 카테고리 DB 제공">🇦🇺 AUSTRALIA (ASD)</span></td>
+              <td>FVEY</td>
+              <td style="color:var(--amber)">WX DB만</td>
+              <td style="color:var(--amber)"><span class="rx">█</span> 명 화상</td>
+              <td style="color:var(--smoke)">미연동</td>
+              <td><span class="an-status pend">LIMITED</span></td>
+              <td>DB 교환 협정만</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host" data-tip="GCSB 연락관 // 태평양 WX 데이터 제공&#10;소규모 참여, 정치적 지지 표명">🇳🇿 NEW ZEALAND (GCSB)</span></td>
+              <td>FVEY</td>
+              <td style="color:var(--smoke)">DB 일부</td>
+              <td style="color:var(--smoke)">화상 연락관</td>
+              <td style="color:var(--smoke)">미연동</td>
+              <td><span class="an-status" style="border-color:var(--smoke);color:var(--smoke);">OBSERV</span></td>
+              <td>옵저버 지위</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host tip-amb" data-tip="NATO 체계 연동 논의 중 // 비FVEY 공개 범위 미확정&#10;Et0-SIGMA L6 승인 후 추진 예정">🇩🇪 GERMANY (BND)</span></td>
+              <td>NATO</td>
+              <td style="color:var(--smoke)">미공개</td>
+              <td style="color:var(--smoke)">미파견</td>
+              <td style="color:var(--smoke)">미연동</td>
+              <td><span class="an-status" style="border-color:var(--smoke);color:var(--smoke);">PENDING</span></td>
+              <td>PHASE IV 검토</td>
+            </tr>
+            <tr>
+              <td><span class="tooltip-host tip-amb" data-tip="NATO 체계 연동 논의 중&#10;해안선 LIDAR 공동 배치 가능성 논의">🇫🇷 FRANCE (DGSE)</span></td>
+              <td>NATO</td>
+              <td style="color:var(--smoke)">미공개</td>
+              <td style="color:var(--smoke)">미파견</td>
+              <td style="color:var(--smoke)">미연동</td>
+              <td><span class="an-status" style="border-color:var(--smoke);color:var(--smoke);">PENDING</span></td>
+              <td>PHASE IV 검토</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DATA SHARING + NEXT STEPS -->
+    <div class="main-grid">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">데이터 공유 프로토콜 / DATA SHARING</div><div class="sec-block-tag">Et0-SIGMA // FVEY</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key tooltip-host" data-tip="QKD-2048 양자키 암호화 // 실시간 채널&#10;영국-미국 간 전용 데이터 링크">GBR-USA 링크</span><span class="dr-val grn">QKD-2048 // ACTIVE</span></div>
+          <div class="data-row"><span class="dr-key">GBR-CAN 링크</span><span class="dr-val amb">TLS-1.3 // 배치 데이터</span></div>
+          <div class="data-row"><span class="dr-key">GBR-AUS 링크</span><span class="dr-val">TLS-1.3 // DB 배치</span></div>
+          <div class="data-row"><span class="dr-key">공유 데이터 유형</span><span class="dr-val hi">산란 DB / 이상치 로그</span></div>
+          <div class="data-row"><span class="dr-key">미공유 데이터</span><span class="dr-val red">유닛 위치 / 탐지 성능</span></div>
+          <div class="data-row"><span class="dr-key">갱신 주기</span><span class="dr-val">24시간 (USA) / 72시간 (기타)</span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">연동 로드맵 / INTEGRATION ROADMAP</div><div class="sec-block-tag">PHASE IV TGT</div></div>
+        <div class="sec-block-body">
+          <div class="activity-item">
+            <div class="ai-time">D+1000 (TGT) — GBR-USA</div>
+            <div class="ai-text">실시간 탐지 이벤트 공유 개시. AN 시리즈 이벤트를 NSA에 즉시 전달. 공동 대응 절차 수립.</div>
+            <div class="ai-tag" style="color:var(--cyan);border-color:var(--cyan);">PLANNED</div>
+          </div>
+          <div class="activity-item">
+            <div class="ai-time">D+1200 (TGT) — GBR-CAN-AUS</div>
+            <div class="ai-text">FVEY 전체 산란 DB 통합. 극지·남반구 데이터로 DB 완성도 98% 달성 목표. QKD 확장 예정.</div>
+            <div class="ai-tag" style="color:var(--cyan);border-color:var(--cyan);">PLANNED</div>
+          </div>
+          <div class="activity-item">
+            <div class="ai-time">D+1400 (TGT) — NATO 확장</div>
+            <div class="ai-text">독일·프랑스 부분 연동 검토. 비FVEY 공개 범위 Et0-SIGMA L6 승인 필요. 해안선 공동 배치 협의.</div>
+            <div class="ai-tag" style="color:var(--amber);border-color:var(--amber);">UNDER REVIEW</div>
+          </div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">WX DB 기여 현황 / DB CONTRIBUTION</div><div class="sec-block-tag">BY NATION</div></div>
+        <div class="sec-block-body">
+          <div style="font-size:8px;color:var(--smoke);letter-spacing:2px;margin-bottom:6px;">국가별 산란 DB 데이터 기여</div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">🇬🇧 UK (자체 수집)</span><span style="color:var(--cyan)">5.2B pts (61.9%)</span></div>
+            <div style="height:5px;background:var(--border);"><div style="width:61.9%;height:100%;background:rgba(106,154,176,0.5);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">🇺🇸 USA (NSA 제공)</span><span style="color:var(--green)">1.8B pts (21.4%)</span></div>
+            <div style="height:5px;background:var(--border);"><div style="width:21.4%;height:100%;background:rgba(58,120,80,0.5);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">🇨🇦 CANADA (CSE)</span><span style="color:var(--amber)">0.9B pts (10.7%)</span></div>
+            <div style="height:5px;background:var(--border);"><div style="width:10.7%;height:100%;background:rgba(160,120,48,0.5);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">🇦🇺 AUSTRALIA (ASD)</span><span style="color:var(--smoke)">0.5B pts (6.0%)</span></div>
+            <div style="height:5px;background:var(--border);"><div style="width:6%;height:100%;background:rgba(58,80,96,0.4);"></div></div>
+          </div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">총 DB 합산</span><span class="dr-val hi">8.4B pts</span></div>
+          <div class="data-row"><span class="dr-key">통합 목표</span><span class="dr-val">12.0B pts (FOC)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // ALLIED INTEGRATION</span>
+      <span>SECRET // NOFORN // Et0-SIGMA // FVEY ONLY</span>
+      <span>PAGE 9 OF 9 // DO NOT REPRODUCE</span>
     </div>
   </div>
   <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>

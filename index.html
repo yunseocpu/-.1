@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BARAD — SECURE ACCESS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;700&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root {
+  --bg: #0f1318;
+  --panel: #141920;
+  --panel2: #181f28;
+  --border: #222c38;
+  --border2: #2a3848;
+  --text: #8ca0b0;
+  --bright: #b0c4d0;
+  --white: #c8d8e0;
+  --cyan: #6a9ab0;
+  --cyan-dim: #2a4858;
+  --red: #b04030;
+  --amber: #a07830;
+  --green: #3a7850;
+  --smoke: #3a5060;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* subtle scanlines */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px);
+}
+
+/* ── SCREEN: LOGIN ── */
+#screen-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  position: relative;
+}
+
+.login-wrap {
+  width: 100%;
+  max-width: 480px;
+}
+
+.login-top-bar {
+  background: var(--red);
+  text-align: center;
+  padding: 6px 12px;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2px;
+}
+
+.login-box {
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  padding: 0;
+  overflow: hidden;
+}
+
+.login-header {
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px 18px;
+  position: relative;
+}
+
+.login-header::after {
+  content: 'BARAD';
+  position: absolute;
+  right: 20px; bottom: -10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 72px; font-weight: 700;
+  color: rgba(106,154,176,0.04);
+  pointer-events: none; line-height: 1;
+  letter-spacing: -2px;
+}
+
+.login-org {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--smoke);
+  margin-bottom: 6px;
+}
+
+.login-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  font-size: 9px;
+  color: var(--smoke);
+  letter-spacing: 2px;
+}
+
+.login-subtitle span { color: var(--cyan); }
+
+.login-body { padding: 22px 28px; }
+
+.field-group { margin-bottom: 16px; }
+
+.field-label {
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--smoke);
+  margin-bottom: 5px;
+  display: block;
+}
+
+.field-row {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  transition: border-color 0.2s;
+}
+
+.field-row:focus-within { border-color: var(--cyan-dim); }
+
+.field-prefix {
+  background: rgba(42,72,88,0.3);
+  border-right: 1px solid var(--border);
+  padding: 0 10px;
+  display: flex; align-items: center;
+  font-size: 9px;
+  color: var(--smoke);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.field-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 9px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--bright);
+  width: 100%;
+  letter-spacing: 1px;
+}
+
+.field-input::placeholder { color: var(--smoke); opacity: 0.6; }
+
+/* clearance level selector */
+.clearance-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+
+.cl-btn {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 7px 4px;
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: var(--smoke);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0;
+}
+
+.cl-btn:hover { border-color: var(--cyan-dim); color: var(--text); }
+.cl-btn.selected { border-color: var(--cyan); color: var(--cyan); background: rgba(106,154,176,0.08); }
+.cl-btn.locked { border-color: var(--border); color: rgba(58,80,96,0.4); cursor: not-allowed; }
+
+.cl-label {
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--smoke);
+  display: block;
+  margin-top: 2px;
+}
+
+.error-msg {
+  font-size: 9px;
+  color: var(--red);
+  letter-spacing: 2px;
+  margin-top: 5px;
+  min-height: 14px;
+  display: none;
+}
+
+.submit-btn {
+  width: 100%;
+  background: rgba(42,72,88,0.25);
+  border: 1px solid var(--border2);
+  padding: 11px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.submit-btn:hover {
+  background: rgba(42,72,88,0.5);
+  border-color: var(--cyan-dim);
+  color: var(--bright);
+}
+
+.login-footer {
+  border-top: 1px solid var(--border);
+  padding: 10px 28px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: var(--smoke);
+  letter-spacing: 1px;
+}
+
+/* ── ACCESS CODE PANEL ── */
+#access-panel {
+  display: none;
+  margin-top: 12px;
+}
+
+.access-notice {
+  background: rgba(160,120,48,0.08);
+  border: 1px solid rgba(160,120,48,0.3);
+  padding: 10px 14px;
+  font-size: 9px;
+  color: var(--amber);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.access-notice::before { content: '▶'; font-size: 8px; }
+
+/* ── SCREEN: TIMER ── */
+#screen-timer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.timer-wrap {
+  width: 100%;
+  max-width: 480px;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  overflow: hidden;
+}
+
+.timer-top {
+  background: rgba(58,120,80,0.15);
+  border-bottom: 1px solid rgba(58,120,80,0.3);
+  padding: 10px 20px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--green);
+}
+
+.timer-body { padding: 28px 28px 20px; text-align: center; }
+
+.timer-label {
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--smoke);
+  margin-bottom: 12px;
+}
+
+.timer-count {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 72px; font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin-bottom: 8px;
+  transition: color 0.3s;
+}
+
+.timer-count.urgent { color: var(--red); }
+
+.timer-sub {
+  font-size: 9px;
+  color: var(--smoke);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.timer-bar-wrap {
+  height: 3px;
+  background: var(--border);
+  margin: 0 0 20px;
+}
+
+.timer-bar {
+  height: 100%;
+  background: var(--amber);
+  transition: width 1s linear, background 0.3s;
+}
+
+.timer-status {
+  font-size: 9px;
+  color: var(--smoke);
+  letter-spacing: 2px;
+  line-height: 2;
+}
+
+.timer-status span { color: var(--green); }
+
+.timer-footer {
+  border-top: 1px solid var(--border);
+  padding: 10px 20px;
+  font-size: 8px;
+  color: var(--smoke);
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ── SCREEN: MAIN DOCUMENT ── */
+#screen-main {
+  display: none;
+  min-height: 100vh;
+}
+
+/* ===== DOCUMENT STYLES ===== */
+.doc-classbar {
+  background: var(--red);
+  text-align: center;
+  padding: 6px;
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: rgba(255,255,255,0.88);
+}
+
+.doc-statusbar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 4px 20px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: var(--smoke);
+  letter-spacing: 1px;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 5px;
+  vertical-align: middle;
+  animation: blink 3s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.doc-body { max-width: 1200px; margin: 0 auto; padding: 0 16px 60px; }
+
+/* DOCUMENT HEADER */
+.doc-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  padding: 12px 0 10px;
+  border-bottom: 2px solid var(--border2);
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.dh-left { font-size: 9px; color: var(--smoke); line-height: 1.9; }
+.dh-left strong { color: var(--text); }
+
+.dh-center { text-align: center; }
+
+.doc-title-main {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+.doc-title-sub {
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 2px;
+}
+
+.doc-date {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+.dh-right { text-align: right; font-size: 9px; color: var(--smoke); line-height: 1.9; }
+.dh-right strong { color: var(--text); }
+
+/* MAP STRIP */
+.map-strip {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.map-strip svg { width: 100%; height: 100%; }
+
+.map-label {
+  position: absolute; top: 8px; left: 10px;
+  font-size: 8px; letter-spacing: 2px; color: var(--smoke);
+}
+
+.map-classification {
+  position: absolute; top: 8px; right: 10px;
+  font-size: 8px; letter-spacing: 2px; color: var(--red);
+}
+
+/* MAIN GRID */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.main-grid-wide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* SECTION BLOCK */
+.sec-block {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.sec-block-head {
+  background: rgba(42,56,72,0.6);
+  border-bottom: 1px solid var(--border);
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sec-block-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--bright);
+}
+
+.sec-block-tag {
+  margin-left: auto;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--smoke);
+}
+
+.sec-block-body { padding: 8px 10px; }
+
+/* DATA ROWS */
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(34,44,56,0.5);
+  font-size: 9px;
+  gap: 8px;
+}
+
+.data-row:last-child { border-bottom: none; }
+
+.dr-key { color: var(--smoke); flex-shrink: 0; }
+.dr-val { color: var(--bright); text-align: right; }
+.dr-val.hi { color: var(--cyan); }
+.dr-val.red { color: var(--red); }
+.dr-val.amb { color: var(--amber); }
+.dr-val.grn { color: var(--green); }
+
+/* STATUS TABLE */
+.status-table { width: 100%; border-collapse: collapse; font-size: 9px; }
+.status-table th {
+  background: rgba(34,44,56,0.8);
+  padding: 4px 7px;
+  text-align: left;
+  color: var(--smoke);
+  font-size: 7px;
+  letter-spacing: 2px;
+  font-weight: 400;
+  border-bottom: 1px solid var(--border);
+}
+.status-table td {
+  padding: 4px 7px;
+  border-bottom: 1px solid rgba(34,44,56,0.4);
+  color: var(--text);
+  vertical-align: top;
+}
+.status-table tr:last-child td { border-bottom: none; }
+.status-table tr:hover td { background: rgba(42,56,72,0.3); }
+
+/* ACTIVITY ITEMS */
+.activity-item {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(34,44,56,0.5);
+  font-size: 9px;
+}
+.activity-item:last-child { border-bottom: none; }
+
+.ai-time { color: var(--amber); font-size: 8px; margin-bottom: 2px; }
+.ai-text { color: var(--text); line-height: 1.5; }
+.ai-tag {
+  display: inline-block;
+  background: rgba(42,56,72,0.5);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  font-size: 7px;
+  color: var(--smoke);
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+
+/* UNIT INDICATOR */
+.unit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(34,44,56,0.4);
+  font-size: 9px;
+}
+.unit-row:last-child { border-bottom: none; }
+
+.unit-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green { background: var(--green); }
+.dot-amber { background: var(--amber); }
+.dot-red { background: var(--red); }
+.dot-grey { background: var(--smoke); }
+
+.unit-name { color: var(--text); flex: 1; }
+.unit-status { color: var(--smoke); font-size: 8px; }
+
+/* REDACTED */
+.rx { background: #0d1218; color: #0d1218; display: inline; user-select: none; padding: 0 12px; }
+
+/* WEATHER MINI */
+.weather-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.wx-item {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  font-size: 8px;
+  flex: 1;
+  min-width: 60px;
+}
+.wx-loc { color: var(--smoke); letter-spacing: 1px; margin-bottom: 2px; font-size: 7px; }
+.wx-val { color: var(--bright); font-size: 11px; }
+.wx-desc { color: var(--smoke); font-size: 7px; margin-top: 1px; }
+
+/* SCATTER STAT */
+.scatter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.sc-item {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  text-align: center;
+}
+.sc-label { font-size: 7px; color: var(--smoke); letter-spacing: 1px; margin-bottom: 3px; }
+.sc-val { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; line-height: 1; }
+.sc-val.normal { color: var(--green); }
+.sc-val.alert { color: var(--amber); }
+.sc-val.alarm { color: var(--red); }
+.sc-unit { font-size: 7px; color: var(--smoke); margin-top: 1px; }
+
+/* ANOMALY LOG */
+.anomaly-item {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(34,44,56,0.4);
+  font-size: 8px;
+}
+.anomaly-item:last-child { border-bottom: none; }
+.an-time { color: var(--amber); white-space: nowrap; }
+.an-loc { color: var(--smoke); }
+.an-desc { color: var(--text); }
+.an-status {
+  padding: 1px 5px;
+  border: 1px solid;
+  font-size: 7px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.an-status.conf { border-color: var(--red); color: var(--red); }
+.an-status.pend { border-color: var(--amber); color: var(--amber); }
+.an-status.clear { border-color: var(--green); color: var(--green); }
+
+/* FULL WIDTH SECTIONS */
+.full-width { margin-bottom: 8px; }
+
+/* FOOTER */
+.doc-footer {
+  border-top: 2px solid var(--border2);
+  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: var(--smoke);
+  letter-spacing: 1px;
+}
+
+/* PHASE BADGE */
+.phase-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid;
+  font-size: 7px;
+  letter-spacing: 2px;
+  margin-right: 4px;
+}
+.pb-a { border-color: #3a5878; color: #3a5878; }
+.pb-b { border-color: var(--cyan-dim); color: var(--cyan); }
+.pb-c { border-color: #2a5040; color: var(--green); }
+.pb-d { border-color: #604020; color: var(--amber); }
+
+/* INLINE SEPARATOR */
+.sep { border: none; border-top: 1px solid var(--border); margin: 6px 0; }
+
+/* NUMBER HIGHLIGHT */
+.num-hi { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; }
+
+/* PROGRESS BAR */
+.prog-wrap { height: 4px; background: var(--border); margin-top: 3px; }
+.prog-bar { height: 100%; background: var(--cyan-dim); }
+
+.two-col-text { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ALERT STRIP */
+.alert-strip {
+  background: rgba(176,64,48,0.08);
+  border-left: 2px solid var(--red);
+  padding: 5px 10px;
+  margin-bottom: 6px;
+  font-size: 9px;
+  color: var(--text);
+  line-height: 1.6;
+}
+.alert-strip .al-head { color: var(--red); font-size: 8px; letter-spacing: 2px; margin-bottom: 2px; }
+
+.notice-strip {
+  background: rgba(106,154,176,0.05);
+  border-left: 2px solid var(--cyan-dim);
+  padding: 5px 10px;
+  margin-bottom: 6px;
+  font-size: 9px;
+  color: var(--text);
+  line-height: 1.6;
+}
+.notice-strip .nl-head { color: var(--cyan); font-size: 8px; letter-spacing: 2px; margin-bottom: 2px; }
+
+</style>
+</head>
+<body>
+
+<!-- ===== SCREEN 1: LOGIN ===== -->
+<div id="screen-login">
+  <div class="login-wrap">
+
+    <div class="login-top-bar">SECRET // NOFORN // Et0-SIGMA RESTRICTED ACCESS</div>
+
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-org">BRITISH AERODYNAMIC & RADAR ANOMALY DIVISION</div>
+        <div class="login-title">영국 항공역학 탐지 연구소<br>BARAD SECURE TERMINAL</div>
+        <div class="login-subtitle">PHANTOM VEIL PROGRAMME &nbsp;·&nbsp; <span>IRONVEIL-7 ENCRYPTED</span></div>
+      </div>
+
+      <div class="login-body">
+
+        <div class="field-group">
+          <label class="field-label">코드 번호 // ACCESS CODE NUMBER</label>
+          <div class="field-row">
+            <span class="field-prefix">CODE</span>
+            <input class="field-input" id="input-code" type="text" placeholder="Enter code number" autocomplete="off" spellcheck="false"/>
+          </div>
+          <div class="error-msg" id="err-code">코드 번호 불일치 — ACCESS DENIED</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">직급 // CLEARANCE LEVEL</label>
+          <div class="clearance-grid">
+            <div class="cl-btn locked" onclick="selectLevel(1)">1<span class="cl-label">L1</span></div>
+            <div class="cl-btn locked" onclick="selectLevel(2)">2<span class="cl-label">L2</span></div>
+            <div class="cl-btn locked" onclick="selectLevel(3)">3<span class="cl-label">L3</span></div>
+            <div class="cl-btn locked" onclick="selectLevel(4)">4<span class="cl-label">L4</span></div>
+            <div class="cl-btn locked" onclick="selectLevel(5)">5<span class="cl-label">L5</span></div>
+            <div class="cl-btn" id="cl-6" onclick="selectLevel(6)">6<span class="cl-label">L6</span></div>
+          </div>
+          <div class="error-msg" id="err-level">권한 없음 — 6단계 이상 필요</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">비밀번호 // PASSWORD</label>
+          <div class="field-row">
+            <span class="field-prefix">PWD</span>
+            <input class="field-input" id="input-pw" type="password" placeholder="Enter password" autocomplete="off"/>
+          </div>
+          <div class="error-msg" id="err-pw">비밀번호 오류 — AUTHENTICATION FAILED</div>
+        </div>
+
+        <button class="submit-btn" onclick="doLogin()">AUTHENTICATE &nbsp;▶</button>
+
+        <!-- ACCESS CODE PANEL (shown after login) -->
+        <div id="access-panel">
+          <div style="height:16px;"></div>
+          <div class="access-notice">접근 허가 번호 입력 요청 — ENTER AUTHORISATION TOKEN</div>
+          <div class="field-group">
+            <label class="field-label">접근 허가 번호 // AUTHORISATION TOKEN</label>
+            <div class="field-row">
+              <span class="field-prefix">TOKEN</span>
+              <input class="field-input" id="input-token" type="text" placeholder="Enter authorisation token" autocomplete="off" spellcheck="false"/>
+            </div>
+            <div class="error-msg" id="err-token">토큰 불일치 — TOKEN REJECTED</div>
+          </div>
+          <button class="submit-btn" onclick="doToken()" style="border-color:rgba(58,120,80,0.4);color:var(--green);">SUBMIT TOKEN &nbsp;▶</button>
+        </div>
+
+      </div>
+
+      <div class="login-footer">
+        <span>SESSION ENCRYPTED — Et0-SIGMA</span>
+        <span>BARAD-TRM // <span style="color:var(--red)">L6 ONLY</span></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: TIMER ===== -->
+<div id="screen-timer">
+  <div class="timer-wrap">
+    <div class="timer-top">▶ &nbsp; TOKEN ACCEPTED — IDENTITY VERIFICATION IN PROGRESS</div>
+    <div class="timer-body">
+      <div class="timer-label">신원 인증 타이머 // IDENTITY VERIFICATION TIMER</div>
+      <div class="timer-count" id="timer-count">27</div>
+      <div class="timer-sub">초 후 시스템 접근 허가 // SYSTEM ACCESS GRANTED IN SECONDS</div>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" id="timer-bar" style="width:100%"></div>
+      </div>
+      <div class="timer-status">
+        접속자: <span>LEVEL-6 // Et0-SIGMA AUTHORISED</span><br>
+        세션 ID: <span id="timer-session">GEN...</span><br>
+        검증 서버: <span>GCHQ-QKD-NODE-07 // IRONVEIL</span>
+      </div>
+    </div>
+    <div class="timer-footer">
+      <span>BARAD // PHANTOM VEIL PROGRAMME</span>
+      <span>DO NOT CLOSE THIS WINDOW</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: MAIN DOCUMENT ===== -->
+<div id="screen-main">
+
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <div class="doc-statusbar">
+    <span><span class="live-dot"></span>BARAD SECURE TERMINAL — SESSION ACTIVE</span>
+    <span>접속: LEVEL-6 // Et0-SIGMA</span>
+    <span id="doc-time">LOADING...</span>
+  </div>
+
+  <div class="doc-body">
+
+    <!-- DOCUMENT HEADER -->
+    <div class="doc-header">
+      <div class="dh-left">
+        발행: <strong>BARAD — DSTL</strong><br>
+        배포: <strong>Et0-SIGMA L6 ONLY</strong><br>
+        작성: <strong><span class="rx">████████</span></strong><br>
+        검토: <strong>GCHQ // NSA LO</strong><br>
+        문서: <strong>PR08-Et0-DB-001</strong>
+      </div>
+      <div class="dh-center">
+        <div class="doc-title-main">PROJECT PHANTOM VEIL // Et0</div>
+        <div class="doc-title-sub">PR.08 LIDAR STEALTH DETECTION PROGRAMME</div>
+        <div class="doc-date">DAILY BRIEF — D+<span id="day-count">001</span></div>
+      </div>
+      <div class="dh-right">
+        보고 주기: <strong>24H</strong><br>
+        보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>
+        프로토콜: <strong>Et0-SIGMA</strong><br>
+        암호화: <strong>QKD-2048</strong><br>
+        페이지: <strong>1 OF 1 (EXTRACT)</strong>
+      </div>
+    </div>
+
+    <!-- MAP STRIP -->
+    <div class="map-strip">
+      <div class="map-label">DEPLOYMENT GRID // UK & COASTAL ZONE // CLASSIFIED</div>
+      <div class="map-classification">TOP SECRET // Et0-SIGMA</div>
+      <svg viewBox="0 0 1200 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- bg -->
+        <rect width="1200" height="180" fill="rgba(10,14,20,0.8)"/>
+        <!-- grid -->
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M40,0 L0,0 0,40" fill="none" stroke="rgba(34,44,56,0.6)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="180" fill="url(#grid)"/>
+        <!-- sea -->
+        <rect x="0" y="0" width="420" height="180" fill="rgba(15,25,38,0.5)"/>
+        <text x="200" y="30" fill="rgba(34,44,56,0.8)" font-family="Share Tech Mono" font-size="11" letter-spacing="3" text-anchor="middle">NORTH SEA</text>
+        <!-- landmass UK rough -->
+        <path d="M420,20 Q480,10 520,30 Q560,50 540,90 Q520,130 500,160 Q470,175 440,170 Q410,160 400,130 Q390,100 400,70 Q410,40 420,20 Z"
+              fill="rgba(28,40,52,0.7)" stroke="rgba(42,56,72,0.8)" stroke-width="1"/>
+        <!-- coastal markers -->
+        <!-- lidar unit dots along coast -->
+        <circle cx="415" cy="50" r="4" fill="rgba(106,154,176,0.15)" stroke="#2a4858" stroke-width="1.5"/>
+        <circle cx="408" cy="80" r="4" fill="rgba(106,154,176,0.15)" stroke="#2a4858" stroke-width="1.5"/>
+        <circle cx="405" cy="110" r="4" fill="rgba(106,154,176,0.15)" stroke="#2a4858" stroke-width="1.5"/>
+        <circle cx="410" cy="140" r="4" fill="rgba(106,154,176,0.15)" stroke="#2a4858" stroke-width="1.5"/>
+        <circle cx="425" cy="165" r="4" fill="rgba(106,154,176,0.15)" stroke="#2a4858" stroke-width="1.5"/>
+        <circle cx="450" cy="172" r="4" fill="rgba(106,154,176,0.15)" stroke="#2a4858" stroke-width="1.5"/>
+        <!-- anomaly detection zone (active unit) -->
+        <circle cx="408" cy="80" r="12" fill="rgba(106,154,176,0.08)" stroke="#6a9ab0" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- laser beam up -->
+        <line x1="408" y1="80" x2="280" y2="30" stroke="#6a9ab0" stroke-width="1" opacity="0.4" stroke-dasharray="4,4"/>
+        <!-- anomaly zone in sky -->
+        <ellipse cx="270" cy="28" rx="35" ry="12" fill="rgba(176,64,48,0.06)" stroke="rgba(176,64,48,0.25)" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="270" y="14" fill="rgba(176,64,48,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle" letter-spacing="1">ANOMALY</text>
+        <!-- other coast -->
+        <circle cx="130" cy="60" r="3" fill="rgba(106,154,176,0.1)" stroke="#2a4858" stroke-width="1"/>
+        <circle cx="200" cy="80" r="3" fill="rgba(106,154,176,0.1)" stroke="#2a4858" stroke-width="1"/>
+        <circle cx="310" cy="55" r="3" fill="rgba(106,154,176,0.1)" stroke="#2a4858" stroke-width="1"/>
+        <circle cx="370" cy="45" r="3" fill="rgba(106,154,176,0.1)" stroke="#2a4858" stroke-width="1"/>
+        <!-- connection lines -->
+        <!-- Command center box -->
+        <rect x="580" y="60" width="160" height="60" rx="1" fill="rgba(20,28,40,0.8)" stroke="rgba(42,56,72,0.8)" stroke-width="1"/>
+        <text x="660" y="82" fill="rgba(106,154,176,0.7)" font-family="Share Tech Mono" font-size="9" text-anchor="middle" letter-spacing="1">BARAD C2</text>
+        <text x="660" y="95" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">DATA FUSION NODE</text>
+        <text x="660" y="107" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">Et0-SIGMA ACTIVE</text>
+        <!-- data lines to c2 -->
+        <line x1="540" y1="80" x2="580" y2="88" stroke="rgba(42,56,72,0.5)" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="408" y1="80" x2="580" y2="88" stroke="rgba(42,72,88,0.3)" stroke-width="1" stroke-dasharray="3,4"/>
+        <!-- other elements -->
+        <text x="800" y="50" fill="rgba(34,44,56,0.6)" font-family="Share Tech Mono" font-size="9" letter-spacing="3">DEPLOYMENT SECTOR A</text>
+        <text x="800" y="65" fill="rgba(34,44,56,0.4)" font-family="Share Tech Mono" font-size="8">UNITS ACTIVE: 847 / 1,200</text>
+        <text x="800" y="80" fill="rgba(34,44,56,0.4)" font-family="Share Tech Mono" font-size="8">COVERAGE: 73.4%</text>
+        <text x="800" y="100" fill="rgba(34,44,56,0.6)" font-family="Share Tech Mono" font-size="9" letter-spacing="3">DEPLOYMENT SECTOR B</text>
+        <text x="800" y="115" fill="rgba(34,44,56,0.4)" font-family="Share Tech Mono" font-size="8">UNITS ACTIVE: 612 / 800</text>
+        <text x="800" y="130" fill="rgba(34,44,56,0.4)" font-family="Share Tech Mono" font-size="8">COVERAGE: 66.1%</text>
+        <!-- Scale bar -->
+        <line x1="50" y1="160" x2="150" y2="160" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+        <line x1="50" y1="155" x2="50" y2="165" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+        <line x1="150" y1="155" x2="150" y2="165" stroke="rgba(58,80,96,0.6)" stroke-width="1"/>
+        <text x="100" y="175" fill="rgba(58,80,96,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">50 km</text>
+      </svg>
+    </div>
+
+    <!-- TOP GRID: 3 columns -->
+    <div class="main-grid">
+
+      <!-- SYSTEM STATUS -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">SYSTEM STATUS</div>
+          <div class="sec-block-tag">Et0 // REAL-TIME</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="scatter-grid">
+            <div class="sc-item">
+              <div class="sc-label">SCATTER IDX</div>
+              <div class="sc-val normal">0.94</div>
+              <div class="sc-unit">NOMINAL</div>
+            </div>
+            <div class="sc-item">
+              <div class="sc-label">ANOMALIES</div>
+              <div class="sc-val alert">3</div>
+              <div class="sc-unit">PENDING</div>
+            </div>
+            <div class="sc-item">
+              <div class="sc-label">UNITS LIVE</div>
+              <div class="sc-val normal">1,459</div>
+              <div class="sc-unit">OF 2,000</div>
+            </div>
+          </div>
+          <div class="unit-row"><div class="unit-dot dot-green"></div><div class="unit-name">SECTOR A — NORTH COAST</div><div class="unit-status">NOMINAL</div></div>
+          <div class="unit-row"><div class="unit-dot dot-amber"></div><div class="unit-name">SECTOR B — EAST COAST</div><div class="unit-status">DEGRADED</div></div>
+          <div class="unit-row"><div class="unit-dot dot-green"></div><div class="unit-name">SECTOR C — SOUTH COAST</div><div class="unit-status">NOMINAL</div></div>
+          <div class="unit-row"><div class="unit-dot dot-red"></div><div class="unit-name">SECTOR D — CHANNEL</div><div class="unit-status">OFFLINE (WX)</div></div>
+          <div class="unit-row"><div class="unit-dot dot-green"></div><div class="unit-name">C2 NODE — BARAD HQ</div><div class="unit-status">ACTIVE</div></div>
+        </div>
+      </div>
+
+      <!-- PROGRAMME STATUS -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">PROGRAMME STATUS</div>
+          <div class="sec-block-tag">PR.08 // PHASE I</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">총 투자액</span><span class="dr-val amb">$78.0 BN USD</span></div>
+          <div class="data-row"><span class="dr-key">프로그램 단계</span><span class="dr-val hi">PHASE I — R&D</span></div>
+          <div class="data-row"><span class="dr-key">DB 수집 기간</span><span class="dr-val">4yr 2mo / 6yr TGT</span></div>
+          <div class="data-row"><span class="dr-key">데이터 포인트</span><span class="dr-val hi">8.4B RECORDS</span></div>
+          <div class="data-row"><span class="dr-key">기상 조건 분류</span><span class="dr-val">2,847 CATEGORIES</span></div>
+          <div class="data-row"><span class="dr-key">배치 유닛 수</span><span class="dr-val hi">2,000 / 3,500 TGT</span></div>
+          <div class="data-row"><span class="dr-key">해안선 커버리지</span><span class="dr-val">68.3%</span></div>
+          <div class="data-row"><span class="dr-key">평균 탐지 시간</span><span class="dr-val amb">12.4 sec (EST)</span></div>
+          <div class="data-row"><span class="dr-key">보안 프로토콜</span><span class="dr-val red">Et0-SIGMA ACTIVE</span></div>
+        </div>
+      </div>
+
+      <!-- WEATHER / SCATTER CONDITIONS -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">WX CONDITIONS</div>
+          <div class="sec-block-tag">SCATTER BASELINE</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="weather-row" style="margin-bottom:6px;">
+            <div class="wx-item">
+              <div class="wx-loc">NTH COAST</div>
+              <div class="wx-val">7°C</div>
+              <div class="wx-desc">OVERCAST / 82% RH</div>
+            </div>
+            <div class="wx-item">
+              <div class="wx-loc">EAST COAST</div>
+              <div class="wx-val">9°C</div>
+              <div class="wx-desc">RAIN / 94% RH</div>
+            </div>
+            <div class="wx-item">
+              <div class="wx-loc">CHANNEL</div>
+              <div class="wx-val">11°C</div>
+              <div class="wx-desc">FOG / LOW VIS</div>
+            </div>
+          </div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">기준 산란 지수</span><span class="dr-val hi">0.94 (NOMINAL)</span></div>
+          <div class="data-row"><span class="dr-key">허용 오차 범위</span><span class="dr-val">± 0.08</span></div>
+          <div class="data-row"><span class="dr-key">현재 이상치 수</span><span class="dr-val amb">3 FLAGGED</span></div>
+          <div class="data-row"><span class="dr-key">CHANNEL 섹터</span><span class="dr-val red">WX NOISE HIGH</span></div>
+          <div class="data-row"><span class="dr-key">EAST 섹터 보정</span><span class="dr-val amb">RAIN DB APPLIED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANOMALY LOG + ACTIVITIES -->
+    <div class="main-grid-wide">
+
+      <!-- ANOMALY DETECTION LOG -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">ANOMALY DETECTION LOG — LAST 24H</div>
+          <div class="sec-block-tag">SCATTER // Et0</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="alert-strip">
+            <div class="al-head">▲ ACTIVE ALERT — ANOMALY REF: Et0-AN-2847</div>
+            NORTH SEA SECTOR A // U-0847 탐지. 산란 이상치 +0.23 (임계값 초과). 교차 확인 진행 중. 속도 벡터 계산 대기.
+          </div>
+          <table class="status-table" style="margin-bottom:6px;">
+            <thead>
+              <tr>
+                <th>TIME (Z)</th>
+                <th>REF</th>
+                <th>SECTOR</th>
+                <th>SCATTER Δ</th>
+                <th>CROSS-VAL</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="an-time" style="color:var(--amber);">0312Z</td>
+                <td>AN-2847</td>
+                <td>NORTH-A // U-0847</td>
+                <td style="color:var(--red);">+0.23</td>
+                <td>진행 중</td>
+                <td><span class="an-status pend">PENDING</span></td>
+              </tr>
+              <tr>
+                <td class="an-time" style="color:var(--smoke);">2148Z</td>
+                <td>AN-2846</td>
+                <td>EAST-B // U-1203</td>
+                <td style="color:var(--amber);">+0.11</td>
+                <td>단일 (WX)</td>
+                <td><span class="an-status clear">CLEARED</span></td>
+              </tr>
+              <tr>
+                <td class="an-time" style="color:var(--smoke);">1834Z</td>
+                <td>AN-2845</td>
+                <td>SOUTH-C // U-0412</td>
+                <td style="color:var(--amber);">+0.09</td>
+                <td>조류 판정</td>
+                <td><span class="an-status clear">CLEARED</span></td>
+              </tr>
+              <tr>
+                <td class="an-time" style="color:var(--smoke);">1102Z</td>
+                <td>AN-2844</td>
+                <td>NORTH-A // U-0391</td>
+                <td style="color:var(--amber);">+0.14</td>
+                <td>단일 (WX)</td>
+                <td><span class="an-status clear">CLEARED</span></td>
+              </tr>
+              <tr>
+                <td class="an-time" style="color:var(--smoke);">0847Z</td>
+                <td>AN-2843</td>
+                <td>CHANNEL-D // U-1847</td>
+                <td style="color:var(--red);">+0.31</td>
+                <td>WX 노이즈</td>
+                <td><span class="an-status clear">CLEARED</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="notice-strip">
+            <div class="nl-head">NOTE</div>
+            AN-2847 — 현재 교차 확인 진행 중. U-0848 / U-0846 보조 탐지 데이터 수신 대기. 직선 이동 판별 알고리즘 활성화됨.
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITIES -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">PROGRAMME ACTIVITIES — LAST 24H</div>
+          <div class="sec-block-tag">OPERATIONAL</div>
+        </div>
+        <div class="sec-block-body">
+
+          <div class="activity-item">
+            <div class="ai-time">0600Z — <span class="phase-badge pb-a">PHASE A</span></div>
+            <div class="ai-text">스코틀랜드 북부 기상 데이터 수집 완료. 극지 조건 DB 업데이트 — 신규 카테고리 14건 추가. 총 DB 포인트 8.4B 달성.</div>
+            <div class="ai-tag">DATA ACQ</div>
+          </div>
+
+          <div class="activity-item">
+            <div class="ai-time">1200Z — <span class="phase-badge pb-b">PHASE B</span></div>
+            <div class="ai-text">SECTOR B EAST 유닛 그룹 점검. U-1180~U-1240 강우 노이즈 보정 완료. 보정 DB 적용 후 이상치 오탐지 율 0.3% → 0.07%로 감소.</div>
+            <div class="ai-tag">MAINTENANCE</div>
+          </div>
+
+          <div class="activity-item">
+            <div class="ai-time">1530Z — <span class="phase-badge pb-c">PHASE C</span></div>
+            <div class="ai-text">전체 어레이 스캔 주기 최적화 완료. 평균 샘플링 주기 0.8sec → 0.6sec 단축. 탐지 공백 11% 감소. AI 분류기 v4.2 업데이트 배포.</div>
+            <div class="ai-tag">OPTIMIZATION</div>
+          </div>
+
+          <div class="activity-item">
+            <div class="ai-time">2000Z — <span class="phase-badge pb-d">PHASE D</span></div>
+            <div class="ai-text">NSA 연락 장교 화상 브리핑. AN-2843 CHANNEL 섹터 오탐지 사례 공유. WX 노이즈 알고리즘 공동 검토. 다음 미팅: <span class="rx">██████</span></div>
+            <div class="ai-tag">LIAISON</div>
+          </div>
+
+          <hr class="sep">
+
+          <div class="data-row"><span class="dr-key">금일 총 탐지 이벤트</span><span class="dr-val">5</span></div>
+          <div class="data-row"><span class="dr-key">확정 탐지</span><span class="dr-val amb">0</span></div>
+          <div class="data-row"><span class="dr-key">조류 / WX 오탐지</span><span class="dr-val grn">4 (CLEARED)</span></div>
+          <div class="data-row"><span class="dr-key">조사 중</span><span class="dr-val red">1 (PENDING)</span></div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID: 3 columns -->
+    <div class="main-grid">
+
+      <!-- TECHNICAL: 10-STEP STATUS -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">DETECTION PROTOCOL</div>
+          <div class="sec-block-tag">10-STEP // STATUS</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key"><span class="phase-badge pb-a">A</span> 01 DATA ACQ</span><span class="dr-val grn">ONGOING</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:70%;background:var(--green);opacity:0.4;"></div></div>
+          <div class="data-row" style="margin-top:4px;"><span class="dr-key"><span class="phase-badge pb-a">A</span> 02 BASELINE</span><span class="dr-val grn">ACTIVE</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:100%;background:var(--green);opacity:0.4;"></div></div>
+          <div class="data-row" style="margin-top:4px;"><span class="dr-key"><span class="phase-badge pb-b">B</span> 03 INFRA</span><span class="dr-val amb">IN PROGRESS</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:57%;background:var(--amber);opacity:0.4;"></div></div>
+          <div class="data-row" style="margin-top:4px;"><span class="dr-key"><span class="phase-badge pb-b">B</span> 04 SCAN OPT</span><span class="dr-val grn">COMPLETE</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:100%;background:var(--green);opacity:0.4;"></div></div>
+          <div class="data-row" style="margin-top:4px;"><span class="dr-key"><span class="phase-badge pb-b">B</span> 05 DEPLOY</span><span class="dr-val amb">57.3%</span></div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:57%;background:var(--amber);opacity:0.4;"></div></div>
+          <div class="data-row" style="margin-top:4px;"><span class="dr-key"><span class="phase-badge pb-c">C</span> 06-08 SCAN</span><span class="dr-val grn">ACTIVE</span></div>
+          <div class="data-row"><span class="dr-key"><span class="phase-badge pb-d">D</span> 09-10 PREDICT</span><span class="dr-val amb">TESTING</span></div>
+        </div>
+      </div>
+
+      <!-- LOGISTICS / DEPLOYMENT -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">DEPLOYMENT LOGISTICS</div>
+          <div class="sec-block-tag">UNIT COUNT</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">총 생산 유닛</span><span class="dr-val hi">2,000</span></div>
+          <div class="data-row"><span class="dr-key">설치 완료</span><span class="dr-val grn">1,459</span></div>
+          <div class="data-row"><span class="dr-key">설치 대기</span><span class="dr-val amb">541</span></div>
+          <div class="data-row"><span class="dr-key">목표 유닛 수</span><span class="dr-val">3,500</span></div>
+          <div class="data-row"><span class="dr-key">추가 발주</span><span class="dr-val">1,500 (Q3)</span></div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">국경선 배치</span><span class="dr-val hi">847 유닛</span></div>
+          <div class="data-row"><span class="dr-key">해안선 배치</span><span class="dr-val hi">612 유닛</span></div>
+          <div class="data-row"><span class="dr-key">평균 배치 간격</span><span class="dr-val">4.2 km</span></div>
+          <div class="data-row"><span class="dr-key">직하 확률</span><span class="dr-val amb">71.4% (EST)</span></div>
+          <div class="data-row"><span class="dr-key">다음 설치 일정</span><span class="dr-val"><span class="rx">████</span></span></div>
+        </div>
+      </div>
+
+      <!-- FINANCIAL / SECURITY -->
+      <div class="sec-block">
+        <div class="sec-block-head">
+          <div class="sec-block-title">FINANCIAL &amp; SECURITY</div>
+          <div class="sec-block-tag">EYES ONLY</div>
+        </div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">총 예산</span><span class="dr-val red">$78.0 BN</span></div>
+          <div class="data-row"><span class="dr-key">집행액</span><span class="dr-val amb">$31.2 BN (40%)</span></div>
+          <div class="data-row"><span class="dr-key">잔여 예산</span><span class="dr-val">$46.8 BN</span></div>
+          <div class="data-row"><span class="dr-key">나토 분담금</span><span class="dr-val"><span class="rx">████████</span></span></div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">보안 프로토콜</span><span class="dr-val red">Et0-SIGMA</span></div>
+          <div class="data-row"><span class="dr-key">암호화</span><span class="dr-val hi">QKD-2048</span></div>
+          <div class="data-row"><span class="dr-key">모니터링</span><span class="dr-val">GCHQ + NSA</span></div>
+          <div class="data-row"><span class="dr-key">보안 등급</span><span class="dr-val red">TS // SCI // L6</span></div>
+          <div class="data-row"><span class="dr-key">유출 위험</span><span class="dr-val red">HIGH — $78B LOSS</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // DAILY BRIEF</span>
+      <span>SECRET // NOFORN // Et0-SIGMA</span>
+      <span>PAGE 1 OF 5 // DO NOT REPRODUCE</span>
+    </div>
+
+  </div><!-- /doc-body page 1 -->
+
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 2 — GANTT / DEPLOYMENT TIMELINE               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+
+    <div class="doc-header">
+      <div class="dh-left">
+        발행: <strong>BARAD — DSTL</strong><br>
+        배포: <strong>Et0-SIGMA L6 ONLY</strong><br>
+        문서: <strong>PR08-Et0-TL-002</strong>
+      </div>
+      <div class="dh-center">
+        <div class="doc-title-main">PROGRAMME DEPLOYMENT TIMELINE</div>
+        <div class="doc-title-sub">PR.08 Et0 // PHASE I–IV MASTER SCHEDULE</div>
+        <div class="doc-date">D+<span>001</span> — D+<span>1460</span> (4YR)</div>
+      </div>
+      <div class="dh-right">
+        보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>
+        페이지: <strong>2 OF 5</strong><br>
+        참조: <strong>PR08-Et0-TL-002</strong>
+      </div>
+    </div>
+
+    <!-- GANTT CHART SECTION -->
+    <div class="sec-block full-width" style="margin-bottom:8px;">
+      <div class="sec-block-head">
+        <div class="sec-block-title">MASTER PROGRAMME GANTT — UNIT DEPLOYMENT SCHEDULE</div>
+        <div class="sec-block-tag">D+0 TO D+1460 // CLASSIFIED</div>
+      </div>
+      <div class="sec-block-body" style="padding:10px 10px 6px;">
+        <!-- GANTT SVG -->
+        <svg viewBox="0 0 1060 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <defs>
+            <pattern id="gantt-grid" width="52.5" height="20" patternUnits="userSpaceOnUse">
+              <line x1="52.5" y1="0" x2="52.5" y2="340" stroke="rgba(34,44,56,0.5)" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="1060" height="340" fill="rgba(10,14,20,0.4)"/>
+          <rect x="180" y="0" width="880" height="340" fill="url(#gantt-grid)"/>
+
+          <!-- QUARTER HEADERS -->
+          <!-- Q columns: 180px label, then 8 quarters × 110px = 880px -->
+          <rect x="180" y="0" width="1060" height="22" fill="rgba(28,40,52,0.9)"/>
+          <!-- Phase labels across top -->
+          <rect x="180" y="0" width="220" height="22" fill="rgba(58,80,120,0.4)"/>
+          <text x="290" y="15" fill="#3a5878" font-family="Share Tech Mono" font-size="9" text-anchor="middle" letter-spacing="2">PHASE I — R&D</text>
+          <rect x="400" y="0" width="220" height="22" fill="rgba(42,72,88,0.4)"/>
+          <text x="510" y="15" fill="#2a4858" font-family="Share Tech Mono" font-size="9" text-anchor="middle" letter-spacing="2">PHASE II — DEPLOY</text>
+          <rect x="620" y="0" width="220" height="22" fill="rgba(30,58,40,0.4)"/>
+          <text x="730" y="15" fill="#2a5040" font-family="Share Tech Mono" font-size="9" text-anchor="middle" letter-spacing="2">PHASE III — OPERATE</text>
+          <rect x="840" y="0" width="220" height="22" fill="rgba(58,48,20,0.4)"/>
+          <text x="950" y="15" fill="#483810" font-family="Share Tech Mono" font-size="9" text-anchor="middle" letter-spacing="2">PHASE IV — EXPAND</text>
+
+          <!-- Quarter tick lines and labels -->
+          <rect x="180" y="22" width="880" height="18" fill="rgba(20,28,40,0.8)"/>
+          <text x="206" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q1</text>
+          <text x="316" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q2</text>
+          <text x="426" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q3</text>
+          <text x="536" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q4</text>
+          <text x="646" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q5</text>
+          <text x="756" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q6</text>
+          <text x="866" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q7</text>
+          <text x="976" y="35" fill="rgba(58,80,96,0.8)" font-family="Share Tech Mono" font-size="8">Q8</text>
+
+          <!-- ROW LABELS + BARS -->
+          <!-- Row height = 30px, starting y=40 -->
+
+          <!-- R1: DB 구축 -->
+          <rect x="0" y="40" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="52" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">01 DATA ACQUISITION</text>
+          <text x="8" y="63" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">DB 전세계 수집</text>
+          <rect x="182" y="44" width="656" height="20" rx="1" fill="rgba(58,88,120,0.5)" stroke="rgba(58,88,120,0.8)" stroke-width="1"/>
+          <text x="510" y="57" fill="rgba(106,154,176,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">4~6YR ONGOING</text>
+
+          <!-- R2: LIDAR 유닛 생산 -->
+          <rect x="0" y="70" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="82" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">02 UNIT PRODUCTION</text>
+          <text x="8" y="93" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">LIDAR 유닛 대량생산</text>
+          <rect x="182" y="74" width="328" height="20" rx="1" fill="rgba(42,72,88,0.5)" stroke="rgba(42,72,88,0.8)" stroke-width="1"/>
+          <text x="346" y="87" fill="rgba(106,154,176,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">2,000 UNITS // Q1–Q3</text>
+          <!-- milestone: 2000 units -->
+          <polygon points="510,74 516,84 510,94 504,84" fill="rgba(160,120,48,0.8)" stroke="rgba(184,136,48,0.9)" stroke-width="1"/>
+          <text x="520" y="87" fill="rgba(160,120,48,0.7)" font-family="Share Tech Mono" font-size="7">2,000 ✓</text>
+          <!-- Phase II production -->
+          <rect x="512" y="74" width="218" height="20" rx="1" fill="rgba(42,72,88,0.3)" stroke="rgba(42,72,88,0.5)" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="621" y="87" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">+1,500 TGT</text>
+
+          <!-- R3: SECTOR A 배치 -->
+          <rect x="0" y="100" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="112" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">03 SECTOR A DEPLOY</text>
+          <text x="8" y="123" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">북부 해안선</text>
+          <rect x="292" y="104" width="218" height="20" rx="1" fill="rgba(38,68,50,0.6)" stroke="rgba(58,100,70,0.8)" stroke-width="1"/>
+          <text x="401" y="117" fill="rgba(80,140,90,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">847 UNITS // COMPLETE</text>
+          <polygon points="510,104 516,114 510,124 504,114" fill="rgba(58,120,80,0.8)" stroke="rgba(80,160,100,0.9)" stroke-width="1"/>
+
+          <!-- R4: SECTOR B 배치 -->
+          <rect x="0" y="130" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="142" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">04 SECTOR B DEPLOY</text>
+          <text x="8" y="153" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">동부 해안선</text>
+          <rect x="402" y="134" width="218" height="20" rx="1" fill="rgba(38,68,50,0.5)" stroke="rgba(58,100,70,0.7)" stroke-width="1"/>
+          <text x="511" y="147" fill="rgba(80,140,90,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">612 UNITS // IN PROGRESS</text>
+          <rect x="620" y="134" width="109" height="20" rx="1" fill="rgba(38,68,50,0.2)" stroke="rgba(58,100,70,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="675" y="147" fill="rgba(58,80,72,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">TGT Q6</text>
+
+          <!-- R5: SECTOR C 배치 -->
+          <rect x="0" y="160" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="172" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">05 SECTOR C DEPLOY</text>
+          <text x="8" y="183" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">남부 해안선</text>
+          <rect x="512" y="164" width="218" height="20" rx="1" fill="rgba(38,68,50,0.3)" stroke="rgba(58,100,70,0.5)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="621" y="177" fill="rgba(58,80,72,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">500 UNITS // TGT Q5–Q7</text>
+
+          <!-- R6: SECTOR D 배치 -->
+          <rect x="0" y="190" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="202" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">06 SECTOR D DEPLOY</text>
+          <text x="8" y="213" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">채널 / 국경선</text>
+          <rect x="732" y="194" width="218" height="20" rx="1" fill="rgba(38,68,50,0.2)" stroke="rgba(58,100,70,0.35)" stroke-width="1" stroke-dasharray="4,3"/>
+          <text x="841" y="207" fill="rgba(58,80,72,0.5)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">540 UNITS // TGT Q7–Q8</text>
+
+          <!-- R7: AI 분류기 개발 -->
+          <rect x="0" y="220" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="232" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">07 AI CLASSIFIER DEV</text>
+          <text x="8" y="243" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">탐지 알고리즘</text>
+          <rect x="182" y="224" width="438" height="20" rx="1" fill="rgba(58,48,20,0.5)" stroke="rgba(100,80,30,0.8)" stroke-width="1"/>
+          <text x="401" y="237" fill="rgba(120,100,50,0.7)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">v1.0 → v4.2 // ONGOING</text>
+          <polygon points="400,224 406,234 400,244 394,234" fill="rgba(160,120,48,0.8)" stroke="rgba(184,136,48,0.9)" stroke-width="1"/>
+
+          <!-- R8: 실전 운용 테스트 -->
+          <rect x="0" y="250" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="262" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">08 OPERATIONAL TEST</text>
+          <text x="8" y="273" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">실전 탐지 테스트</text>
+          <rect x="512" y="254" width="328" height="20" rx="1" fill="rgba(42,52,20,0.4)" stroke="rgba(80,100,30,0.6)" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="676" y="267" fill="rgba(80,100,40,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">LIVE DETECTION // Q5 ONWARDS</text>
+
+          <!-- R9: NSA / NATO 연동 -->
+          <rect x="0" y="280" width="180" height="28" fill="rgba(20,28,40,0.6)"/>
+          <text x="8" y="292" fill="rgba(58,80,96,0.9)" font-family="Share Tech Mono" font-size="8">09 NSA / NATO INTEG</text>
+          <text x="8" y="303" fill="rgba(42,56,72,0.7)" font-family="Share Tech Mono" font-size="7">동맹 연동</text>
+          <rect x="732" y="284" width="328" height="20" rx="1" fill="rgba(80,50,20,0.3)" stroke="rgba(120,80,30,0.5)" stroke-width="1" stroke-dasharray="5,3"/>
+          <text x="896" y="297" fill="rgba(100,70,30,0.6)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">PHASE IV // CLASSIFIED</text>
+
+          <!-- R10: FULL OPERATIONAL CAPABILITY -->
+          <rect x="0" y="310" width="180" height="30" fill="rgba(20,28,40,0.8)"/>
+          <text x="8" y="322" fill="rgba(106,154,176,0.8)" font-family="Share Tech Mono" font-size="8">10 FULL OPR CAPAB.</text>
+          <text x="8" y="333" fill="rgba(58,80,96,0.6)" font-family="Share Tech Mono" font-size="7">FOC 달성 목표</text>
+          <polygon points="1058,315 1058,335 1048,325" fill="rgba(106,154,176,0.3)" stroke="rgba(106,154,176,0.6)" stroke-width="1.5"/>
+          <line x1="182" y1="325" x2="1048" y2="325" stroke="rgba(106,154,176,0.15)" stroke-width="1" stroke-dasharray="6,4"/>
+          <text x="840" y="322" fill="rgba(58,80,96,0.5)" font-family="Share Tech Mono" font-size="8">FOC TGT: Q8 (D+1460)</text>
+
+          <!-- TODAY marker -->
+          <line x1="510" y1="22" x2="510" y2="340" stroke="rgba(176,64,48,0.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <rect x="490" y="22" width="40" height="12" fill="rgba(176,64,48,0.6)"/>
+          <text x="510" y="31" fill="rgba(255,200,190,0.8)" font-family="Share Tech Mono" font-size="7" text-anchor="middle">TODAY</text>
+
+          <!-- Row dividers -->
+          <line x1="0" y1="68" x2="1060" y2="68" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="98" x2="1060" y2="98" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="128" x2="1060" y2="128" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="158" x2="1060" y2="158" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="188" x2="1060" y2="188" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="218" x2="1060" y2="218" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="248" x2="1060" y2="248" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="278" x2="1060" y2="278" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="0" y1="308" x2="1060" y2="308" stroke="rgba(34,44,56,0.4)" stroke-width="1"/>
+          <line x1="180" y1="0" x2="180" y2="340" stroke="rgba(42,56,72,0.6)" stroke-width="1.5"/>
+        </svg>
+
+        <!-- LEGEND -->
+        <div style="display:flex;gap:20px;padding:8px 0 2px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--smoke);">
+            <div style="width:20px;height:8px;background:rgba(58,88,120,0.5);border:1px solid rgba(58,88,120,0.8);"></div> DATA / R&D
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--smoke);">
+            <div style="width:20px;height:8px;background:rgba(42,72,88,0.5);border:1px solid rgba(42,72,88,0.8);"></div> PRODUCTION
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--smoke);">
+            <div style="width:20px;height:8px;background:rgba(38,68,50,0.6);border:1px solid rgba(58,100,70,0.8);"></div> DEPLOYMENT (ACTIVE)
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--smoke);">
+            <div style="width:20px;height:8px;background:rgba(38,68,50,0.2);border:1px solid rgba(58,100,70,0.4);border-style:dashed;"></div> DEPLOYMENT (PLANNED)
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--smoke);">
+            <div style="width:10px;height:10px;background:rgba(160,120,48,0.8);transform:rotate(45deg);"></div> MILESTONE
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:8px;color:var(--red);">
+            <div style="width:1px;height:12px;background:rgba(176,64,48,0.6);"></div> TODAY (D+847)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MILESTONE SUMMARY -->
+    <div class="main-grid">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">KEY MILESTONES — ACHIEVED</div><div class="sec-block-tag">D+0 TO TODAY</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">D+0</span><span class="dr-val hi">프로그램 개시 // EXORD</span></div>
+          <div class="data-row"><span class="dr-key">D+90</span><span class="dr-val grn">최초 유닛 생산 완료 (100개)</span></div>
+          <div class="data-row"><span class="dr-key">D+180</span><span class="dr-val grn">SECTOR A 초기 배치 (200개)</span></div>
+          <div class="data-row"><span class="dr-key">D+365</span><span class="dr-val grn">AI 분류기 v1.0 배포</span></div>
+          <div class="data-row"><span class="dr-key">D+540</span><span class="dr-val grn">유닛 1,000개 달성</span></div>
+          <div class="data-row"><span class="dr-key">D+720</span><span class="dr-val grn">DB 5B 포인트 달성</span></div>
+          <div class="data-row"><span class="dr-key">D+800</span><span class="dr-val grn">AI 분류기 v4.2 배포</span></div>
+          <div class="data-row"><span class="dr-key" style="color:var(--red);">D+847</span><span class="dr-val red">TODAY // 유닛 1,459 / DB 8.4B</span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">KEY MILESTONES — PLANNED</div><div class="sec-block-tag">TODAY TO D+1460</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">D+900</span><span class="dr-val amb">SECTOR B 배치 완료 (TGT)</span></div>
+          <div class="data-row"><span class="dr-key">D+1000</span><span class="dr-val amb">유닛 2,000개 달성 (TGT)</span></div>
+          <div class="data-row"><span class="dr-key">D+1095</span><span class="dr-val amb">SECTOR C 배치 개시</span></div>
+          <div class="data-row"><span class="dr-key">D+1200</span><span class="dr-val amb">실전 탐지 테스트 완료</span></div>
+          <div class="data-row"><span class="dr-key">D+1300</span><span class="dr-val amb">NSA / NATO 연동 개시</span></div>
+          <div class="data-row"><span class="dr-key">D+1400</span><span class="dr-val amb">유닛 3,500개 목표</span></div>
+          <div class="data-row"><span class="dr-key">D+1460</span><span class="dr-val red">FOC 달성 목표 // 4YR TGT</span></div>
+          <div class="data-row"><span class="dr-key">POST-FOC</span><span class="dr-val smoke" style="color:var(--smoke);">PHASE IV — <span class="rx">████████</span></span></div>
+        </div>
+      </div>
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">PROGRAMME VELOCITY</div><div class="sec-block-tag">RATE ANALYSIS</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">일일 유닛 설치율</span><span class="dr-val hi">1.72 units/day</span></div>
+          <div class="data-row"><span class="dr-key">일일 DB 수집율</span><span class="dr-val hi">9.9M pts/day</span></div>
+          <div class="data-row"><span class="dr-key">AI 분류기 갱신</span><span class="dr-val">매 90일</span></div>
+          <div class="data-row"><span class="dr-key">오탐지율 추이</span><span class="dr-val grn">0.30% → 0.07% ▼</span></div>
+          <div class="data-row"><span class="dr-key">현 예산 소모율</span><span class="dr-val amb">$36.8M / day</span></div>
+          <div class="data-row"><span class="dr-key">FOC 달성 예측</span><span class="dr-val grn">D+1447 (13일 선행)</span></div>
+          <div class="data-row"><span class="dr-key">일정 준수율</span><span class="dr-val hi">94.2%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // DEPLOYMENT TIMELINE</span>
+      <span>SECRET // NOFORN // Et0-SIGMA</span>
+      <span>PAGE 2 OF 5 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 3 — FINANCIAL / BUDGET                        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-FIN-003</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">FINANCIAL &amp; BUDGET DETAIL</div>
+        <div class="doc-title-sub">PR.08 Et0 // $78.0 BN PROGRAMME BREAKDOWN</div>
+        <div class="doc-date">FISCAL YEAR ANALYSIS — EYES ONLY</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>3 OF 5</strong></div>
+    </div>
+
+    <!-- BUDGET OVERVIEW -->
+    <div class="main-grid" style="margin-bottom:8px;">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">TOTAL PROGRAMME BUDGET</div><div class="sec-block-tag">$78.0 BN USD</div></div>
+        <div class="sec-block-body">
+          <div style="text-align:center;padding:10px 0 6px;">
+            <div style="font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:700;color:var(--red);line-height:1;">$78.0</div>
+            <div style="font-size:11px;color:var(--smoke);letter-spacing:2px;">BILLION USD</div>
+          </div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">UK MOD 분담</span><span class="dr-val hi">$52.0 BN (66.7%)</span></div>
+          <div class="data-row"><span class="dr-key">NATO 공동 분담</span><span class="dr-val"><span class="rx">████████</span></span></div>
+          <div class="data-row"><span class="dr-key">NSA 연동 비용</span><span class="dr-val"><span class="rx">████████</span></span></div>
+          <div class="data-row"><span class="dr-key">GCHQ Et0-SIGMA</span><span class="dr-val amb">$2.1 BN (별도)</span></div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">EXPENDITURE TO DATE</div><div class="sec-block-tag">D+847 // CUMULATIVE</div></div>
+        <div class="sec-block-body">
+          <div style="text-align:center;padding:10px 0 6px;">
+            <div style="font-family:'Rajdhani',sans-serif;font-size:48px;font-weight:700;color:var(--amber);line-height:1;">$31.2</div>
+            <div style="font-size:11px;color:var(--smoke);letter-spacing:2px;">BILLION USD (40.0%)</div>
+          </div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">잔여 예산</span><span class="dr-val grn">$46.8 BN</span></div>
+          <div class="data-row"><span class="dr-key">일일 소모율</span><span class="dr-val amb">$36.8M / DAY</span></div>
+          <div class="data-row"><span class="dr-key">예산 소진 예상</span><span class="dr-val">D+2118 (충분)</span></div>
+          <div class="data-row"><span class="dr-key">예산 여유율</span><span class="dr-val grn">+$4.2 BN (비상)</span></div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">BUDGET ALLOCATION</div><div class="sec-block-tag">BY CATEGORY</div></div>
+        <div class="sec-block-body">
+          <!-- Simple bar chart -->
+          <div style="font-size:8px;color:var(--smoke);margin-bottom:6px;letter-spacing:2px;">카테고리별 예산 배분</div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">유닛 생산 / PRODUCTION</span><span style="color:var(--cyan);">$28.6 BN</span></div>
+            <div style="height:6px;background:var(--border);"><div style="width:36.7%;height:100%;background:rgba(106,154,176,0.5);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">R&D / 알고리즘</span><span style="color:var(--cyan);">$18.2 BN</span></div>
+            <div style="height:6px;background:var(--border);"><div style="width:23.3%;height:100%;background:rgba(106,154,176,0.4);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">배치 / DEPLOYMENT</span><span style="color:var(--amber);">$12.4 BN</span></div>
+            <div style="height:6px;background:var(--border);"><div style="width:15.9%;height:100%;background:rgba(160,120,48,0.5);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">보안 / SECURITY</span><span style="color:var(--amber);">$8.8 BN</span></div>
+            <div style="height:6px;background:var(--border);"><div style="width:11.3%;height:100%;background:rgba(160,120,48,0.4);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">운용 / OPERATIONS</span><span style="color:var(--green);">$6.0 BN</span></div>
+            <div style="height:6px;background:var(--border);"><div style="width:7.7%;height:100%;background:rgba(58,120,80,0.5);"></div></div>
+          </div>
+          <div style="margin-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:2px;"><span style="color:var(--text)">예비비 / CONTINGENCY</span><span style="color:var(--smoke);">$4.0 BN</span></div>
+            <div style="height:6px;background:var(--border);"><div style="width:5.1%;height:100%;background:rgba(58,80,96,0.4);"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUARTERLY SPEND TABLE -->
+    <div class="sec-block full-width" style="margin-bottom:8px;">
+      <div class="sec-block-head"><div class="sec-block-title">QUARTERLY EXPENDITURE BREAKDOWN — D+0 TO D+847</div><div class="sec-block-tag">FINANCIAL // EYES ONLY</div></div>
+      <div class="sec-block-body">
+        <table class="status-table">
+          <thead>
+            <tr>
+              <th>QUARTER</th><th>기간</th><th>PRODUCTION</th><th>R&D</th><th>DEPLOY</th><th>SECURITY</th><th>OPS</th><th>분기 합계</th><th>누계</th><th>예산 잔여</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="color:var(--amber)">Q1</td><td>D+0~90</td><td>$2.1B</td><td>$1.8B</td><td>$0.4B</td><td>$0.8B</td><td>$0.3B</td><td style="color:var(--cyan)">$5.4B</td><td>$5.4B</td><td style="color:var(--green)">$72.6B</td></tr>
+            <tr><td style="color:var(--amber)">Q2</td><td>D+91~180</td><td>$3.8B</td><td>$2.1B</td><td>$0.9B</td><td>$0.8B</td><td>$0.4B</td><td style="color:var(--cyan)">$8.0B</td><td>$13.4B</td><td style="color:var(--green)">$64.6B</td></tr>
+            <tr><td style="color:var(--amber)">Q3</td><td>D+181~270</td><td>$4.2B</td><td>$2.0B</td><td>$1.4B</td><td>$0.7B</td><td>$0.5B</td><td style="color:var(--cyan)">$8.8B</td><td>$22.2B</td><td style="color:var(--green)">$55.8B</td></tr>
+            <tr><td style="color:var(--amber)">Q4</td><td>D+271~365</td><td>$3.6B</td><td>$1.9B</td><td>$1.8B</td><td>$0.6B</td><td>$0.5B</td><td style="color:var(--cyan)">$8.4B</td><td>$30.6B</td><td style="color:var(--green)">$47.4B</td></tr>
+            <tr style="background:rgba(42,56,72,0.15)"><td style="color:var(--red)">TODAY</td><td>D+847</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="color:var(--red)">$31.2B</td><td style="color:var(--red)">$31.2B</td><td style="color:var(--amber)">$46.8B</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // FINANCIAL DETAIL</span>
+      <span>SECRET // NOFORN // Et0-SIGMA // EYES ONLY</span>
+      <span>PAGE 3 OF 5 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 4 — UNIT DEPLOYMENT STATUS                    -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-DEP-004</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">UNIT DEPLOYMENT STATUS</div>
+        <div class="doc-title-sub">PR.08 Et0 // SECTOR-BY-SECTOR BREAKDOWN // D+847</div>
+        <div class="doc-date">DEPLOYMENT DETAIL — CLASSIFIED</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>4 OF 5</strong></div>
+    </div>
+
+    <!-- SECTOR OVERVIEW -->
+    <div class="main-grid" style="margin-bottom:8px;">
+      <div class="sec-block">
+        <div class="sec-block-head" style="background:rgba(38,68,50,0.3);"><div class="sec-block-title" style="color:var(--green);">SECTOR A — NORTH COAST</div><div class="sec-block-tag" style="color:var(--green);">OPERATIONAL</div></div>
+        <div class="sec-block-body">
+          <div style="text-align:center;padding:6px 0;"><div style="font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--green);line-height:1;">847</div><div style="font-size:8px;color:var(--smoke);letter-spacing:2px;">유닛 배치 완료</div></div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">목표 유닛</span><span class="dr-val">900</span></div>
+          <div class="data-row"><span class="dr-key">달성율</span><span class="dr-val grn">94.1%</span></div>
+          <div class="data-row"><span class="dr-key">평균 배치 간격</span><span class="dr-val">3.8 km</span></div>
+          <div class="data-row"><span class="dr-key">직하 확률 (추정)</span><span class="dr-val hi">78.4%</span></div>
+          <div class="data-row"><span class="dr-key">현 상태</span><span class="dr-val grn">NOMINAL</span></div>
+          <div class="data-row"><span class="dr-key">오탐지율</span><span class="dr-val grn">0.06%</span></div>
+          <div class="data-row"><span class="dr-key">커버리지</span><span class="dr-val hi">412 km</span></div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head" style="background:rgba(58,48,20,0.3);"><div class="sec-block-title" style="color:var(--amber);">SECTOR B — EAST COAST</div><div class="sec-block-tag" style="color:var(--amber);">IN PROGRESS</div></div>
+        <div class="sec-block-body">
+          <div style="text-align:center;padding:6px 0;"><div style="font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--amber);line-height:1;">612</div><div style="font-size:8px;color:var(--smoke);letter-spacing:2px;">유닛 배치 완료</div></div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">목표 유닛</span><span class="dr-val">800</span></div>
+          <div class="data-row"><span class="dr-key">달성율</span><span class="dr-val amb">76.5%</span></div>
+          <div class="data-row"><span class="dr-key">평균 배치 간격</span><span class="dr-val">5.2 km</span></div>
+          <div class="data-row"><span class="dr-key">직하 확률 (추정)</span><span class="dr-val amb">62.1%</span></div>
+          <div class="data-row"><span class="dr-key">현 상태</span><span class="dr-val amb">DEGRADED (RAIN)</span></div>
+          <div class="data-row"><span class="dr-key">오탐지율</span><span class="dr-val amb">0.14% (WX)</span></div>
+          <div class="data-row"><span class="dr-key">커버리지</span><span class="dr-val">318 km</span></div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head" style="background:rgba(42,52,80,0.3);"><div class="sec-block-title" style="color:var(--cyan);">SECTOR C — SOUTH COAST</div><div class="sec-block-tag" style="color:var(--cyan);">PLANNED Q5</div></div>
+        <div class="sec-block-body">
+          <div style="text-align:center;padding:6px 0;"><div style="font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--cyan);line-height:1;">0</div><div style="font-size:8px;color:var(--smoke);letter-spacing:2px;">배치 예정</div></div>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">목표 유닛</span><span class="dr-val">500</span></div>
+          <div class="data-row"><span class="dr-key">배치 개시</span><span class="dr-val amb">D+1095 (TGT)</span></div>
+          <div class="data-row"><span class="dr-key">계획 간격</span><span class="dr-val">4.0 km</span></div>
+          <div class="data-row"><span class="dr-key">예상 직하 확률</span><span class="dr-val">72.0%</span></div>
+          <div class="data-row"><span class="dr-key">현 상태</span><span class="dr-val smoke" style="color:var(--smoke);">PRE-SURVEY</span></div>
+          <div class="data-row"><span class="dr-key">예산 할당</span><span class="dr-val hi">$4.2 BN</span></div>
+          <div class="data-row"><span class="dr-key">커버리지 (TGT)</span><span class="dr-val">200 km</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTOR D + TOTAL -->
+    <div class="main-grid-wide" style="margin-bottom:8px;">
+      <div class="sec-block">
+        <div class="sec-block-head" style="background:rgba(80,30,20,0.3);"><div class="sec-block-title" style="color:var(--red);">SECTOR D — ENGLISH CHANNEL / BORDER</div><div class="sec-block-tag" style="color:var(--red);">OFFLINE (WX)</div></div>
+        <div class="sec-block-body">
+          <div class="main-grid" style="margin-bottom:0;">
+            <div>
+              <div style="text-align:center;padding:6px 0;"><div style="font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--red);line-height:1;">0</div><div style="font-size:8px;color:var(--smoke);letter-spacing:2px;">배치 예정 (Q7~Q8)</div></div>
+              <hr class="sep">
+              <div class="data-row"><span class="dr-key">목표 유닛</span><span class="dr-val">540</span></div>
+              <div class="data-row"><span class="dr-key">배치 개시</span><span class="dr-val red">D+1300 (TGT)</span></div>
+              <div class="data-row"><span class="dr-key">오프라인 이유</span><span class="dr-val red">채널 WX 노이즈</span></div>
+            </div>
+            <div>
+              <div class="data-row" style="margin-top:12px;"><span class="dr-key">WX 노이즈 수준</span><span class="dr-val red">HIGH</span></div>
+              <div class="data-row"><span class="dr-key">복귀 예정</span><span class="dr-val amb">기상 호전 후</span></div>
+              <div class="data-row"><span class="dr-key">대안 탐지</span><span class="dr-val hi">SECTOR A 보완 중</span></div>
+              <div class="data-row"><span class="dr-key">예산 할당</span><span class="dr-val">$5.8 BN</span></div>
+              <div class="data-row"><span class="dr-key">전략 중요도</span><span class="dr-val red">CRITICAL</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">TOTAL DEPLOYMENT SUMMARY</div><div class="sec-block-tag">ALL SECTORS // D+847</div></div>
+        <div class="sec-block-body">
+          <table class="status-table">
+            <thead><tr><th>SECTOR</th><th>배치 완료</th><th>목표</th><th>달성율</th><th>상태</th><th>오탐지율</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--green)">A — NORTH</td><td>847</td><td>900</td><td style="color:var(--green)">94.1%</td><td><span class="an-status conf" style="border-color:var(--green);color:var(--green);">NOM</span></td><td style="color:var(--green)">0.06%</td></tr>
+              <tr><td style="color:var(--amber)">B — EAST</td><td>612</td><td>800</td><td style="color:var(--amber)">76.5%</td><td><span class="an-status pend">DEG</span></td><td style="color:var(--amber)">0.14%</td></tr>
+              <tr><td style="color:var(--cyan)">C — SOUTH</td><td>0</td><td>500</td><td style="color:var(--smoke)">—</td><td><span class="an-status" style="border-color:var(--smoke);color:var(--smoke);">PLAN</span></td><td style="color:var(--smoke)">—</td></tr>
+              <tr><td style="color:var(--red)">D — CHANNEL</td><td>0</td><td>540</td><td style="color:var(--smoke)">—</td><td><span class="an-status conf">OFF</span></td><td style="color:var(--smoke)">—</td></tr>
+              <tr style="background:rgba(42,56,72,0.2)"><td style="color:var(--bright)">TOTAL</td><td style="color:var(--bright)">1,459</td><td style="color:var(--bright)">2,740</td><td style="color:var(--amber)">53.2%</td><td><span class="an-status pend">PROG</span></td><td style="color:var(--green)">0.07%</td></tr>
+            </tbody>
+          </table>
+          <hr class="sep">
+          <div class="data-row"><span class="dr-key">전체 해안선 커버리지</span><span class="dr-val amb">730 km / 1,420 km TGT</span></div>
+          <div class="data-row"><span class="dr-key">평균 직하 확률 (현재)</span><span class="dr-val hi">71.4% (목표 85%)</span></div>
+          <div class="data-row"><span class="dr-key">전체 시스템 오탐지율</span><span class="dr-val grn">0.07% (목표 &lt;0.05%)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // DEPLOYMENT STATUS</span>
+      <span>SECRET // NOFORN // Et0-SIGMA</span>
+      <span>PAGE 4 OF 5 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- PAGE 5 — TECHNICAL SPECIFICATION                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="doc-classbar" style="margin-top:2px;">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+  <div class="doc-body" style="margin-top:0;">
+
+    <div class="doc-header">
+      <div class="dh-left">문서: <strong>PR08-Et0-TEC-005</strong><br>배포: <strong>Et0-SIGMA L6 ONLY</strong></div>
+      <div class="dh-center">
+        <div class="doc-title-main">TECHNICAL SPECIFICATION</div>
+        <div class="doc-title-sub">PR.08 Et0 // LIDAR UNIT &amp; ALGORITHM DETAIL</div>
+        <div class="doc-date">TECHNICAL REFERENCE — CLASSIFIED</div>
+      </div>
+      <div class="dh-right">보안등급: <strong style="color:var(--red)">TOP SECRET // SCI</strong><br>페이지: <strong>5 OF 5</strong></div>
+    </div>
+
+    <!-- LIDAR UNIT SPEC -->
+    <div class="main-grid-wide" style="margin-bottom:8px;">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">LIDAR UNIT — HARDWARE SPECIFICATION</div><div class="sec-block-tag">Et0-LU MK.IV</div></div>
+        <div class="sec-block-body">
+          <div class="two-col-text">
+            <div>
+              <div style="font-size:8px;color:var(--smoke);letter-spacing:2px;margin-bottom:6px;">광학계 / OPTICS</div>
+              <div class="data-row"><span class="dr-key">레이저 파장</span><span class="dr-val hi">905 nm (NIR)</span></div>
+              <div class="data-row"><span class="dr-key">펄스 반복율</span><span class="dr-val">300 kHz</span></div>
+              <div class="data-row"><span class="dr-key">최대 출력</span><span class="dr-val"><span class="rx">████</span> mW</span></div>
+              <div class="data-row"><span class="dr-key">빔 발산각</span><span class="dr-val">0.3 mrad</span></div>
+              <div class="data-row"><span class="dr-key">스캔 방식</span><span class="dr-val hi">MEMS + 위상배열</span></div>
+              <div class="data-row"><span class="dr-key">수직 FOV</span><span class="dr-val">0° ~ 90° (천정)</span></div>
+              <div class="data-row"><span class="dr-key">수평 FOV</span><span class="dr-val">360° (전방위)</span></div>
+              <div class="data-row"><span class="dr-key">각도 해상도</span><span class="dr-val">0.05°</span></div>
+            </div>
+            <div>
+              <div style="font-size:8px;color:var(--smoke);letter-spacing:2px;margin-bottom:6px;">수신계 / DETECTOR</div>
+              <div class="data-row"><span class="dr-key">수신 감도</span><span class="dr-val hi">APD 어레이</span></div>
+              <div class="data-row"><span class="dr-key">최소 탐지 신호</span><span class="dr-val"><span class="rx">████</span> pW</span></div>
+              <div class="data-row"><span class="dr-key">샘플링 주기</span><span class="dr-val hi">0.6 sec</span></div>
+              <div class="data-row"><span class="dr-key">데이터 전송</span><span class="dr-val">Et0-SIGMA 암호화</span></div>
+              <div class="data-row"><span class="dr-key">엣지 처리</span><span class="dr-val hi">온보드 DSP</span></div>
+              <div class="data-row"><span class="dr-key">유닛 중량</span><span class="dr-val"><span class="rx">██</span> kg</span></div>
+              <div class="data-row"><span class="dr-key">운용 온도</span><span class="dr-val">-40°C ~ +55°C</span></div>
+              <div class="data-row"><span class="dr-key">방수 등급</span><span class="dr-val">IP68 // 전천후</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">SCATTER DETECTION — ALGORITHM SPEC</div><div class="sec-block-tag">AI CLASSIFIER v4.2</div></div>
+        <div class="sec-block-body">
+          <div class="two-col-text">
+            <div>
+              <div style="font-size:8px;color:var(--smoke);letter-spacing:2px;margin-bottom:6px;">기준선 / BASELINE</div>
+              <div class="data-row"><span class="dr-key">DB 포인트</span><span class="dr-val hi">8.4B records</span></div>
+              <div class="data-row"><span class="dr-key">기상 카테고리</span><span class="dr-val hi">2,847개</span></div>
+              <div class="data-row"><span class="dr-key">기준 갱신 주기</span><span class="dr-val">실시간 (1초)</span></div>
+              <div class="data-row"><span class="dr-key">트리거 임계값</span><span class="dr-val"><span class="rx">±0.██</span></span></div>
+              <div class="data-row"><span class="dr-key">교차 확인 유닛</span><span class="dr-val">최소 2개</span></div>
+              <div class="data-row"><span class="dr-key">속도 계산</span><span class="dr-val hi">벡터 삼각측량</span></div>
+            </div>
+            <div>
+              <div style="font-size:8px;color:var(--smoke);letter-spacing:2px;margin-bottom:6px;">분류기 / CLASSIFIER</div>
+              <div class="data-row"><span class="dr-key">AI 모델</span><span class="dr-val"><span class="rx">████████</span></span></div>
+              <div class="data-row"><span class="dr-key">추론 시간</span><span class="dr-val hi">&lt; 0.3 sec</span></div>
+              <div class="data-row"><span class="dr-key">자연 현상 배제</span><span class="dr-val hi">등속 직선 판별</span></div>
+              <div class="data-row"><span class="dr-key">탐지 정확도</span><span class="dr-val grn">99.93% (EST)</span></div>
+              <div class="data-row"><span class="dr-key">오탐지율</span><span class="dr-val grn">0.07%</span></div>
+              <div class="data-row"><span class="dr-key">버전</span><span class="dr-val hi">v4.2 (최신)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCATTER DB + C2 -->
+    <div class="main-grid" style="margin-bottom:8px;">
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">SCATTER DATABASE</div><div class="sec-block-tag">WX CATEGORY MAP</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">총 수집 기간</span><span class="dr-val hi">4yr 2mo</span></div>
+          <div class="data-row"><span class="dr-key">수집 지역 수</span><span class="dr-val">47개국 / 312개 지점</span></div>
+          <div class="data-row"><span class="dr-key">청명 카테고리</span><span class="dr-val">284개</span></div>
+          <div class="data-row"><span class="dr-key">강우 카테고리</span><span class="dr-val amb">612개</span></div>
+          <div class="data-row"><span class="dr-key">강설 카테고리</span><span class="dr-val hi">318개</span></div>
+          <div class="data-row"><span class="dr-key">박무 / 안개</span><span class="dr-val">408개</span></div>
+          <div class="data-row"><span class="dr-key">폭풍 / 극지</span><span class="dr-val">892개</span></div>
+          <div class="data-row"><span class="dr-key">사막 / 고온</span><span class="dr-val">333개</span></div>
+          <div class="data-row"><span class="dr-key">DB 저장소</span><span class="dr-val red">GCHQ // <span class="rx">████</span></span></div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">C2 SYSTEM SPEC</div><div class="sec-block-tag">BARAD HQ NODE</div></div>
+        <div class="sec-block-body">
+          <div class="data-row"><span class="dr-key">처리 아키텍처</span><span class="dr-val hi">분산 엣지 + 중앙</span></div>
+          <div class="data-row"><span class="dr-key">엣지 클러스터</span><span class="dr-val">12개 노드</span></div>
+          <div class="data-row"><span class="dr-key">중앙 처리 능력</span><span class="dr-val"><span class="rx">████</span> TFLOPS</span></div>
+          <div class="data-row"><span class="dr-key">데이터 레이턴시</span><span class="dr-val hi">&lt; 200 ms</span></div>
+          <div class="data-row"><span class="dr-key">암호화</span><span class="dr-val red">QKD-2048</span></div>
+          <div class="data-row"><span class="dr-key">백업 C2</span><span class="dr-val"><span class="rx">████████████</span></span></div>
+          <div class="data-row"><span class="dr-key">방공 연동</span><span class="dr-val grn">&lt; 1.0 sec</span></div>
+          <div class="data-row"><span class="dr-key">가동율</span><span class="dr-val grn">99.97% (SLA)</span></div>
+        </div>
+      </div>
+
+      <div class="sec-block">
+        <div class="sec-block-head"><div class="sec-block-title">STEALTH DETECTION PERFORMANCE</div><div class="sec-block-tag">EST. CAPABILITY</div></div>
+        <div class="sec-block-body">
+          <div class="alert-strip">
+            <div class="al-head">▲ CLASSIFIED — CAPABILITY ESTIMATE</div>
+            이하 수치는 추정값이며 실제 운용 성능은 기상, 배치 밀도, 고도에 따라 상이할 수 있음.
+          </div>
+          <div class="data-row"><span class="dr-key">F-22 탐지 확률</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
+          <div class="data-row"><span class="dr-key">F-35 탐지 확률</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
+          <div class="data-row"><span class="dr-key">B-2 탐지 확률</span><span class="dr-val amb"><span class="rx">██</span>% (EST)</span></div>
+          <div class="data-row"><span class="dr-key">평균 탐지 시간</span><span class="dr-val hi">12.4 sec (EST)</span></div>
+          <div class="data-row"><span class="dr-key">최소 탐지 고도</span><span class="dr-val">300 m</span></div>
+          <div class="data-row"><span class="dr-key">최대 탐지 고도</span><span class="dr-val"><span class="rx">████</span> m</span></div>
+          <div class="data-row"><span class="dr-key">FOC 달성 후 예측</span><span class="dr-val red"><span class="rx">██</span>% // CLASSIFIED</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>BARAD // PHANTOM VEIL // PR.08 Et0 // TECHNICAL SPEC</span>
+      <span>SECRET // NOFORN // Et0-SIGMA // EYES ONLY</span>
+      <span>PAGE 5 OF 5 // DO NOT REPRODUCE</span>
+    </div>
+  </div>
+  <div class="doc-classbar">SECRET // NOFORN // Et0-SIGMA // REL TO GBR, USA // PHANTOM VEIL</div>
+
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+const CORRECT_CODE = 'M_rT05,/84';
+const CORRECT_LEVEL = 6;
+const CORRECT_PW = '00cF;g0Ond3';
+const CORRECT_TOKEN = 'Gd73849296491298312Nog0si';
+
+let selectedLevel = null;
+let loginPassed = false;
+
+function selectLevel(n) {
+  if (n !== 6) return; // only 6 works
+  selectedLevel = n;
+  document.querySelectorAll('.cl-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('cl-6').classList.add('selected');
+}
+
+function showErr(id, show) {
+  document.getElementById(id).style.display = show ? 'block' : 'none';
+}
+
+function doLogin() {
+  let ok = true;
+
+  const code = document.getElementById('input-code').value.trim();
+  if (code !== CORRECT_CODE) { showErr('err-code', true); ok = false; }
+  else showErr('err-code', false);
+
+  if (selectedLevel !== CORRECT_LEVEL) { showErr('err-level', true); ok = false; }
+  else showErr('err-level', false);
+
+  const pw = document.getElementById('input-pw').value;
+  if (pw !== CORRECT_PW) { showErr('err-pw', true); ok = false; }
+  else showErr('err-pw', false);
+
+  if (ok) {
+    loginPassed = true;
+    document.getElementById('access-panel').style.display = 'block';
+    document.querySelector('.submit-btn').style.display = 'none';
+    document.getElementById('input-token').focus();
+  }
+}
+
+function doToken() {
+  const token = document.getElementById('input-token').value.trim();
+  if (token !== CORRECT_TOKEN) {
+    showErr('err-token', true);
+    return;
+  }
+  showErr('err-token', false);
+  startTimer();
+}
+
+function startTimer() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-timer').style.display = 'flex';
+
+  // Generate session ID
+  const sid = 'GD' + Math.random().toString(36).substring(2,8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+  document.getElementById('timer-session').textContent = sid;
+
+  let t = 27;
+  const countEl = document.getElementById('timer-count');
+  const barEl = document.getElementById('timer-bar');
+
+  const interval = setInterval(() => {
+    t--;
+    countEl.textContent = t;
+    barEl.style.width = ((t / 27) * 100) + '%';
+
+    if (t <= 8) {
+      countEl.classList.add('urgent');
+      barEl.style.background = 'var(--red)';
+    } else if (t <= 15) {
+      barEl.style.background = 'var(--amber)';
+    }
+
+    if (t <= 0) {
+      clearInterval(interval);
+      showMain();
+    }
+  }, 1000);
+}
+
+function showMain() {
+  document.getElementById('screen-timer').style.display = 'none';
+  document.getElementById('screen-main').style.display = 'block';
+
+  // Update time
+  function tick() {
+    const now = new Date();
+    const z = n => String(n).padStart(2,'0');
+    document.getElementById('doc-time').textContent =
+      z(now.getUTCHours()) + z(now.getUTCMinutes()) + 'Z // ' +
+      now.getUTCFullYear() + '-' + z(now.getUTCMonth()+1) + '-' + z(now.getUTCDate());
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // Day counter (simulated)
+  document.getElementById('day-count').textContent = '847';
+}
+
+// Allow Enter key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('access-panel').style.display === 'block') {
+      doToken();
+    } else if (!loginPassed) {
+      doLogin();
+    }
+  }
+});
+</script>
+
+</body>
+</html>

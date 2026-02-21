@@ -216,49 +216,37 @@ body::before {
 }
 
 /* ── TOOLTIP ── */
-.tooltip-host {
-  position: relative;
-  cursor: default;
-}
-.tooltip-host:hover::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--panel);
-  border: 1px solid var(--border2);
-  border-left: 2px solid var(--cyan-dim);
-  padding: 6px 10px;
+.tooltip-host { cursor: default; }
+
+#tt-box {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  display: none;
+  background: #141920;
+  border: 1px solid #2a3848;
+  border-left: 2px solid #2a4858;
+  padding: 7px 11px;
   font-size: 9px;
-  color: var(--text);
-  letter-spacing: 1px;
-  white-space: nowrap;
-  z-index: 9000;
-  pointer-events: none;
-  line-height: 1.6;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   font-family: 'Share Tech Mono', monospace;
+  color: #8ca0b0;
+  letter-spacing: 1px;
+  line-height: 1.8;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.7);
+  max-width: 320px;
+  white-space: pre-wrap;
 }
-.tooltip-host:hover::before {
-  content: '';
-  position: absolute;
-  bottom: calc(100% + 2px);
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: var(--border2);
-  z-index: 9001;
+#tt-box.tip-red { border-left-color: #b04030; color: #c8a09a; }
+#tt-box.tip-amb { border-left-color: #a07830; }
+#tt-arrow {
+  position: fixed;
+  z-index: 99998;
   pointer-events: none;
-}
-/* red variant tooltip */
-.tooltip-host.tip-red:hover::after {
-  border-left-color: var(--red);
-  color: rgba(200,160,150,0.9);
-}
-/* amber variant */
-.tooltip-host.tip-amb:hover::after {
-  border-left-color: var(--amber);
+  display: none;
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #2a3848;
 }
 
 .cl-label {
@@ -784,6 +772,8 @@ body::before {
 </style>
 </head>
 <body>
+<div id="tt-box"></div>
+<div id="tt-arrow"></div>
 
 <!-- ===== SCREEN 1: LOGIN ===== -->
 <div id="screen-login">
@@ -2566,6 +2556,56 @@ function showMain() {
 
   // Day counter (simulated)
   document.getElementById('day-count').textContent = '847';
+}
+
+
+// ── TOOLTIP ENGINE ──
+const ttBox   = document.getElementById('tt-box');
+const ttArrow = document.getElementById('tt-arrow');
+
+document.addEventListener('mouseover', e => {
+  const host = e.target.closest('.tooltip-host');
+  if (!host || !host.dataset.tip) return;
+  const tip = host.dataset.tip;
+  ttBox.textContent = tip;
+  ttBox.className = '';
+  if (host.classList.contains('tip-red')) ttBox.classList.add('tip-red');
+  if (host.classList.contains('tip-amb')) ttBox.classList.add('tip-amb');
+  ttBox.style.display = 'block';
+  ttArrow.style.display = 'block';
+  positionTT(host);
+});
+
+document.addEventListener('mousemove', e => {
+  if (ttBox.style.display === 'none') return;
+  const host = e.target.closest('.tooltip-host');
+  if (host) positionTT(host);
+});
+
+document.addEventListener('mouseout', e => {
+  const host = e.target.closest('.tooltip-host');
+  if (!host) return;
+  const to = e.relatedTarget;
+  if (to && host.contains(to)) return;
+  ttBox.style.display = 'none';
+  ttArrow.style.display = 'none';
+});
+
+function positionTT(host) {
+  const r  = host.getBoundingClientRect();
+  const bw = ttBox.offsetWidth;
+  const bh = ttBox.offsetHeight;
+  const vw = window.innerWidth;
+  let left = r.left + r.width / 2 - bw / 2;
+  let top  = r.top - bh - 10;
+  if (left < 8) left = 8;
+  if (left + bw > vw - 8) left = vw - bw - 8;
+  if (top < 8) top = r.bottom + 10;
+  ttBox.style.left = left + 'px';
+  ttBox.style.top  = top  + 'px';
+  const arrowLeft = r.left + r.width / 2 - 6;
+  ttArrow.style.left = Math.max(8, Math.min(vw - 20, arrowLeft)) + 'px';
+  ttArrow.style.top  = (top + bh) + 'px';
 }
 
 // Allow Enter key
